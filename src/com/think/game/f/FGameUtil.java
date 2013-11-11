@@ -21,6 +21,10 @@ public class FGameUtil {
 
 	private final static Random random = new Random();
 
+	public static Color[] getAllColors(){
+		return colors;
+	}
+	
 	/**
 	 * 获取下一个随机颜色下标，不包括0
 	 * 
