@@ -71,7 +71,7 @@ public class FGame {
 	 * @return -1 不可玩游戏(或不正确的索引)，0点击为非空处，1点击没有任何消除，2点击有消除并得分
 	 */
 	public int click(int x, int y) {
-		if (x < 0 || x >= cols || y < 0 || y > rows) {
+		if (x < 0 || x >= rows || y < 0 || y > cols) {
 			return -1;
 		}
 		if (rcs[x][y] != 0) {
@@ -118,8 +118,8 @@ public class FGame {
 		ty = y;
 		do {
 			tx++;
-		} while (tx < cols - 1 && rcs[tx][ty] == 0);
-		if (tx < cols) {
+		} while (tx < rows - 1 && rcs[tx][ty] == 0);
+		if (tx < rows) {
 			nodes.add(new int[] { tx, ty });
 		}
 
@@ -138,8 +138,8 @@ public class FGame {
 		ty = y;
 		do {
 			ty++;
-		} while (ty < rows - 1 && rcs[tx][ty] == 0);
-		if (ty < rows) {
+		} while (ty < cols - 1 && rcs[tx][ty] == 0);
+		if (ty < cols) {
 			nodes.add(new int[] { tx, ty });
 		}
 
