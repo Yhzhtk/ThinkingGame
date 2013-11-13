@@ -51,8 +51,6 @@ public class FGameInputProcessor implements InputProcessor {
 
 		if (arg0 < x1 || arg0 > x2 || arg1 < y1 || arg1 > y2) {
 			Log.i("Event", "不在游戏区");
-			// 处理开始按钮
-
 		} else {
 			int x = (arg0 - x1) / pw;
 			int y = (arg1 - y1) / ph;

@@ -6,6 +6,9 @@ import android.util.Log;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +16,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -34,8 +39,14 @@ public class FGameAct implements ApplicationListener {
 	private static String[] imgPaths;
 	private static Texture[] texts;
 	private static Image[] rects;
-	private static TextureRegionDrawable btnDraw;
+	private static TextureRegionDrawable btnUpDraw;
+	private static TextureRegionDrawable btnDownDraw;
 	private static Texture backText;
+
+	private static Music loopMusic;
+	private static Sound startSound;
+	private static Sound scoreSound;
+	private static Sound errorSound;
 
 	// 游戏参数
 	public FGameParameter para;
@@ -44,7 +55,7 @@ public class FGameAct implements ApplicationListener {
 	private SpriteBatch batch;
 	private Stage stage;
 	private BitmapFont font;
-	//private Skin skin;
+	// private Skin skin;
 
 	// 游戏实例
 	private FGame fgame;
@@ -67,6 +78,16 @@ public class FGameAct implements ApplicationListener {
 	 * 初始化资源信息，只需一次，在第一次加载时
 	 */
 	private void initProperties() {
+		loopMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ten.mp3"));
+		loopMusic.setLooping(true);
+		loopMusic.setVolume(0.3f);
+		loopMusic.play();
+		
+
+		startSound = Gdx.audio.newSound(Gdx.files.internal("music/start.wav"));
+		scoreSound = Gdx.audio.newSound(Gdx.files.internal("music/score.wav"));
+		errorSound = Gdx.audio.newSound(Gdx.files.internal("music/error.wav"));
+
 		// 初始化颜色
 		int length = FGameUtil.getAllColors().length;
 		imgPaths = new String[length];
@@ -82,11 +103,72 @@ public class FGameAct implements ApplicationListener {
 		// 初始化font和skin文件
 		font = new BitmapFont(Gdx.files.internal("default.fnt"),
 				Gdx.files.internal("default.png"), false);
-		//skin = new Skin(Gdx.files.internal("uiskin.json"));
-		
+		// skin = new Skin(Gdx.files.internal("uiskin.json"));
+
 		// 初始化背景
-		btnDraw = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("btn.png"))));
-		backText =new Texture(Gdx.files.internal("back.png"));
+		btnUpDraw = new TextureRegionDrawable(new TextureRegion(new Texture(
+				Gdx.files.internal("btnUp.png"))));
+		btnDownDraw = new TextureRegionDrawable(new TextureRegion(new Texture(
+				Gdx.files.internal("btnDown.png"))));
+		backText = new Texture(Gdx.files.internal("back.png"));
+
+		// 加载参数
+		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
+
+		batch = new SpriteBatch();
+		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
+				batch);
+
+		Image back = new Image(backText);
+		back.setSize(para.getScreenWidth(), para.getScreenHeight());
+		stage.addActor(back);
+
+		// 添加按钮和标签
+		TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(
+				btnUpDraw, btnDownDraw, btnDownDraw, font);
+
+		btn1 = new TextButton("Start", btnStyle);
+		setBound(btn1, para.getBtn1Bound());
+		stage.addActor(btn1);
+
+		btn2 = new TextButton("Pause", btnStyle);
+		setBound(btn2, para.getBtn2Bound());
+		stage.addActor(btn2);
+
+		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
+		setBound(lab, para.getLabelBound());
+		stage.addActor(lab);
+
+		// 初始化绘图区域
+		gameArea = new Image[para.getRows()][para.getCols()];
+		for (int i = 0; i < para.getRows(); i++) {
+			for (int j = 0; j < para.getCols(); j++) {
+				gameArea[i][j] = getImageByPos(i, j);
+				stage.addActor(gameArea[i][j]);
+			}
+		}
+
+		// 添加按钮事件
+		stage.addListener(new EventListener() {
+			@Override
+			public boolean handle(Event arg0) {
+				if (arg0.getTarget() == btn1) {
+					Log.d("Event", "Btn1 Click " + btn1.getText() + " Start");
+					if (btn1.getText().toString().equals("Start")) {
+						startSound.play();
+						btn1.setText("End");
+						initGame(null);
+					} else {
+						btn1.setText("Start");
+					}
+					return true;
+				} else if (arg0.getTarget() == btn2) {
+					Log.d("Event", "Btn2 Click");
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 
 	/**
@@ -101,6 +183,9 @@ public class FGameAct implements ApplicationListener {
 		if (res == 2) {
 			// 重绘界面
 			repaint();
+			scoreSound.play();
+		} else {
+			errorSound.play();
 		}
 		if (res > 0) {
 			// 更新游戏得分
@@ -117,40 +202,16 @@ public class FGameAct implements ApplicationListener {
 	public void initGame(FGame fgame) {
 		// 将fgame置为全局
 		if (this.fgame != fgame) {
+			if (fgame == null) {
+				fgame = new FGame();
+			}
 			this.fgame = fgame;
 		}
 
-		// 加载参数
-		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
-
-		batch = new SpriteBatch();
-		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
-				batch);
-		
-		Image back = new Image(backText);
-		back.setSize(para.getScreenWidth(), para.getScreenHeight());
-		stage.addActor(back);
-		
-		// 添加按钮和标签
-		TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(btnDraw, btnDraw, btnDraw, font);
-
-		btn1 = new TextButton("Start", btnStyle);
-		setBound(btn1, para.getBtn1Bound());
-		stage.addActor(btn1);
-
-		btn2 = new TextButton("Pause", btnStyle);
-		setBound(btn2, para.getBtn2Bound());
-		stage.addActor(btn2);
-		
-		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
-		setBound(lab, para.getLabelBound());
-		stage.addActor(lab);
-
-		gameArea = new Image[para.getRows()][para.getCols()];
+		// 初始化颜色
 		for (int i = 0; i < para.getRows(); i++) {
 			for (int j = 0; j < para.getCols(); j++) {
-				gameArea[i][j] = getImageByPos(i, j);
-				stage.addActor(gameArea[i][j]);
+				updateImage(i, j);
 			}
 		}
 	}
@@ -166,8 +227,11 @@ public class FGameAct implements ApplicationListener {
 		// 初始化游戏
 		initGame(this.fgame);
 
-		// 添加事件
-		Gdx.input.setInputProcessor(new FGameInputProcessor(this));
+		// 添加事件，先判断是否游戏点击，后判断按钮等
+		InputMultiplexer multi = new InputMultiplexer();
+		multi.addProcessor(new FGameInputProcessor(this));
+		multi.addProcessor(stage);
+		Gdx.input.setInputProcessor(multi);
 
 		Log.d("GdxEvent", "create");
 	}
@@ -198,6 +262,9 @@ public class FGameAct implements ApplicationListener {
 
 	@Override
 	public void resume() {
+
+		loopMusic.play();
+
 		// 当pause时EGL的资源被销毁，resume时需要加载
 		for (int i = 0; i < FGameUtil.getAllColors().length; i++) {
 			texts[i] = new Texture(Gdx.files.internal(imgPaths[i]));

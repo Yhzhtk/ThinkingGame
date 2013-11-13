@@ -40,11 +40,11 @@ public class FGameParameter {
 			para.screenWidth = Gdx.graphics.getWidth();
 			para.screenHeight = Gdx.graphics.getHeight();
 
-			para.btn1Bound = new Rectangle(20, 20, 140, 100);
-			para.btn2Bound = new Rectangle(180, 20, 140, 100);
-			para.labelBound = new Rectangle(340, 20, 120, 100);
+			para.btn1Bound = new Rectangle(20, 20, 140, 80);
+			para.btn2Bound = new Rectangle(180, 20, 140, 80);
+			para.labelBound = new Rectangle(340, 20, 120, 80);
 
-			para.gameBound = new Rectangle(20, 150, 420, 672);
+			para.gameBound = new Rectangle(25, 130, 420, 672);
 			para.nodeSize = new int[] { 40, 40 };
 			para.rectSize = new int[] { 43, 43 };
 		}
