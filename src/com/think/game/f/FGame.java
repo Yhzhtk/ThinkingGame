@@ -8,6 +8,8 @@ import android.util.Log;
 import android.util.SparseArray;
 
 /**
+ * FGame游戏内部算法类
+ * 
  * @author gudh
  * @date 2013-11-11
  */
@@ -33,6 +35,9 @@ public class FGame {
 		this.score = 0;
 	}
 
+	/**
+	 * 打印当前布局，左下角是0, 0
+	 */
 	public void printLayout(){
 		System.out.println("=======================");
 		for(int j = rows - 1; j >= 0; j--){

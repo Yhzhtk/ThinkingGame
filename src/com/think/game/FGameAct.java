@@ -50,11 +50,10 @@ public class FGameAct implements ApplicationListener {
 	private FGame fgame;
 
 	// 控件
-	Label lab;
-	TextButton btn1;
-	TextButton btn2;
-	// 存储每个区块
-	private Image[][] gameArea;
+	Label lab; // 得分标签
+	TextButton btn1; // 按钮1
+	TextButton btn2; // 按钮2
+	private Image[][] gameArea; // 存储每个区块
 
 	// 标志是否第一次加载
 	private boolean isInit = false;
@@ -65,9 +64,9 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * 初始化资源信息
+	 * 初始化资源信息，只需一次，在第一次加载时
 	 */
-	private void initproperties() {
+	private void initProperties() {
 		// 初始化颜色
 		int length = FGameUtil.getAllColors().length;
 		texts = new Texture[length];
@@ -85,93 +84,47 @@ public class FGameAct implements ApplicationListener {
 		font = new BitmapFont(Gdx.files.internal("default.fnt"),
 				Gdx.files.internal("default.png"), false);
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
-
 	}
 
-	/**
-	 * 设置控件的位置
-	 * @param obj
-	 * @param bound
-	 */
-	private void setBound(Object obj, Rectangle bound) {
-		try {
-			Method posMethod = obj.getClass().getMethod("setPosition",
-					float.class, float.class);
-			posMethod.invoke(obj, bound.getX(), bound.getY());
-
-			Method sizeMethod = obj.getClass().getMethod("setSize",
-					float.class, float.class);
-			sizeMethod.invoke(obj, bound.getWidth(), bound.getHeight());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 
 	/**
-	 * 根据x,y获取Image，并设置好位置和大小
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	private Image getNewImageByPos(int x, int y) {
-		int index = fgame.getRcs()[x][y];
-		Image m = new Image(texts[index]);
-		// m可能需要clone一下
-
-		float xx = para.getGameBound().getX() + x * para.getRectSize()[0];
-		float yy = para.getGameBound().getY() + y * para.getRectSize()[1];
-		m.setPosition(xx, yy);
-		m.setSize(para.getNodeSize()[0], para.getNodeSize()[1]);
-		return m;
-	}
-
-	/**
-	 * 更新某个位置的颜色
-	 * 
+	 * 玩一次游戏，参数为坐标（左下角为0，0）
 	 * @param x
 	 * @param y
 	 */
-	private void updatePos(int x, int y) {
-		int index = fgame.getRcs()[x][y];
-		gameArea[x][y].setDrawable(new TextureRegionDrawable(new TextureRegion(
-				texts[index])));
-	}
-
-	/**
-	 * 更新得分
-	 * 
-	 * @param score
-	 */
-	private void updateScore(int score) {
-		lab.setText("Come on!\n\nScore: " + score);
-	}
-
 	public void playOnce(int x, int y) {
 		int res = fgame.click(x, y);
 		Log.i("PlayResult", "玩游戏结果：" + res);
 		if (res == 2) {
 			for (int i = 0; i < fgame.getRows(); i++) {
 				for (int j = 0; j < fgame.getCols(); j++) {
-					updatePos(i, j);
+					updateImage(i, j);
 				}
 			}
+			// 更新游戏得分
 			updateScore(fgame.getScore());
 		}
 	}
 
 	/**
-	 * 初始化游戏信息
+	 * 以指定行列初始化游戏信息，开始游戏时初始化
+	 * @param fgame 以fgame初始化数据
 	 */
-	private void initGame(int rows, int cols) {
+	public void initGame(FGame fgame) {
+		// 将fgame置为全局
+		if(this.fgame != fgame){
+			this.fgame = fgame;
+		}
+		
 		// 加载参数
 		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
 
 		batch = new SpriteBatch();
-
 		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
 				batch);
 
+		// 添加按钮和标签
 		btn1 = new TextButton("Start", skin);
 		setBound(btn1, para.getBtn1Bound());
 		stage.addActor(btn1);
@@ -187,7 +140,7 @@ public class FGameAct implements ApplicationListener {
 		gameArea = new Image[para.getRows()][para.getCols()];
 		for (int i = 0; i < para.getRows(); i++) {
 			for (int j = 0; j < para.getCols(); j++) {
-				gameArea[i][j] = getNewImageByPos(i, j);
+				gameArea[i][j] = getImageByPos(i, j);
 				stage.addActor(gameArea[i][j]);
 			}
 		}
@@ -197,12 +150,12 @@ public class FGameAct implements ApplicationListener {
 	public void create() {
 		if (!isInit) {
 			// 第一次加载时初始化资源信息
-			initproperties();
+			initProperties();
 			isInit = true;
 		}
 
 		// 初始化游戏
-		initGame(23, 32);
+		initGame(this.fgame);
 
 		// 添加事件
 		Gdx.input.setInputProcessor(new FGameInputProcessor(this));
@@ -231,5 +184,63 @@ public class FGameAct implements ApplicationListener {
 
 	@Override
 	public void resume() {
+	}
+	
+	/**
+	 * 利用反射设置控件的位置和大小
+	 * @param obj
+	 * @param bound
+	 */
+	private void setBound(Object obj, Rectangle bound) {
+		try {
+			Method posMethod = obj.getClass().getMethod("setPosition",
+					float.class, float.class);
+			posMethod.invoke(obj, bound.getX(), bound.getY());
+
+			Method sizeMethod = obj.getClass().getMethod("setSize",
+					float.class, float.class);
+			sizeMethod.invoke(obj, bound.getWidth(), bound.getHeight());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 根据x,y获取Image，并设置好位置和大小
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private Image getImageByPos(int x, int y) {
+		int index = fgame.getRcs()[x][y];
+		// 从text中生成一个Image对象
+		Image m = new Image(texts[index]);
+		float xx = para.getGameBound().getX() + x * para.getRectSize()[0];
+		float yy = para.getGameBound().getY() + y * para.getRectSize()[1];
+		m.setPosition(xx, yy);
+		m.setSize(para.getNodeSize()[0], para.getNodeSize()[1]);
+		return m;
+	}
+
+	/**
+	 * 更新某个位置的颜色
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	private void updateImage(int x, int y) {
+		int index = fgame.getRcs()[x][y];
+		gameArea[x][y].setDrawable(new TextureRegionDrawable(new TextureRegion(
+				texts[index])));
+	}
+
+	/**
+	 * 更新得分
+	 * 
+	 * @param score
+	 */
+	private void updateScore(int score) {
+		lab.setText("Come on!\n\nScore: " + score);
 	}
 }
