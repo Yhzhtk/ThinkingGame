@@ -8,9 +8,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,7 +31,7 @@ import com.think.game.f.FGameUtil;
 public class FGameAct implements ApplicationListener {
 
 	// 存储所有颜色对象
-	private static Pixmap[] pixs;
+	private static String[] imgPaths;
 	private static Texture[] texts;
 	private static Image[] rects;
 	private static TextureRegionDrawable btnDraw;
@@ -71,15 +69,13 @@ public class FGameAct implements ApplicationListener {
 	private void initProperties() {
 		// 初始化颜色
 		int length = FGameUtil.getAllColors().length;
-		pixs = new Pixmap[length];
+		imgPaths = new String[length];
 		texts = new Texture[length];
 		rects = new Image[length];
 
 		for (int i = 0; i < length; i++) {
-			pixs[i] = new Pixmap(2, 2, Format.RGBA8888);
-			pixs[i].setColor(FGameUtil.getAllColors()[i]);
-			pixs[i].fillRectangle(0, 0, 2, 2);
-			texts[i] = new Texture(pixs[i], false);
+			imgPaths[i] = "image/" + i + ".png";
+			texts[i] = new Texture(Gdx.files.internal(imgPaths[i]));
 			rects[i] = new Image(texts[i]);
 		}
 
@@ -204,7 +200,7 @@ public class FGameAct implements ApplicationListener {
 	public void resume() {
 		// 当pause时EGL的资源被销毁，resume时需要加载
 		for (int i = 0; i < FGameUtil.getAllColors().length; i++) {
-			texts[i] = new Texture(pixs[i], false);
+			texts[i] = new Texture(Gdx.files.internal(imgPaths[i]));
 			rects[i] = new Image(texts[i]);
 		}
 		repaint();
