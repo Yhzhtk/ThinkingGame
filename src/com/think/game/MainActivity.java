@@ -12,7 +12,7 @@ public class MainActivity extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// ³õÊ¼»¯ÓÎÏ·
+		// åˆå§‹åŒ–æ¸¸æˆ
 		initialize(new FGameAct(), false);
 	}
 

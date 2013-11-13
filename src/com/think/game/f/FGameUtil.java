@@ -26,7 +26,7 @@ public class FGameUtil {
 	}
 	
 	/**
-	 * »ñÈ¡ÏÂÒ»¸öËæ»úÑÕÉ«ÏÂ±ê£¬²»°üÀ¨0
+	 * è·å–ä¸‹ä¸€ä¸ªéšæœºé¢œè‰²ä¸‹æ ‡ï¼Œä¸åŒ…æ‹¬0
 	 * 
 	 * @return
 	 */
@@ -39,7 +39,7 @@ public class FGameUtil {
 	}
 
 	/**
-	 * ÔÚrowsĞĞºÍcolsÁĞÖĞ£¬Ëæ»úÈ¡³öcount¸ö½ÚµãÎ»ÖÃ£¬ÒÔ{row, col}±íÊ¾
+	 * åœ¨rowsè¡Œå’Œcolsåˆ—ä¸­ï¼Œéšæœºå–å‡ºcountä¸ªèŠ‚ç‚¹ä½ç½®ï¼Œä»¥{row, col}è¡¨ç¤º
 	 * 
 	 * @param rows
 	 * @param cols
@@ -54,10 +54,10 @@ public class FGameUtil {
 			do {
 				exist = false;
 				temp = new int[] { random.nextInt(rows), random.nextInt(cols) };
-				// ÅĞ¶ÏÊÇ·ñÒÑ¾­´æÔÚ
+				// åˆ¤æ–­æ˜¯å¦å·²ç»å­˜åœ¨
 				for (int[] th : emptyPos) {
 					if (th[0] == temp[0] && th[1] == temp[1]) {
-						// Èç¹ûÒÑ¾­´æÔÚÔòÖØĞÂÉú³ÉËæ»ú
+						// å¦‚æœå·²ç»å­˜åœ¨åˆ™é‡æ–°ç”Ÿæˆéšæœº
 						exist = true;
 						break;
 					}
@@ -69,7 +69,7 @@ public class FGameUtil {
 	}
 
 	/**
-	 * ÔÚrowsĞĞºÍcolsÁĞÖĞ£¬Ëæ»úÈ¡³öcount¸ö½ÚµãÎ»ÖÃ£¬ÒÔrow_col×Ö·û´®±íÊ¾
+	 * åœ¨rowsè¡Œå’Œcolsåˆ—ä¸­ï¼Œéšæœºå–å‡ºcountä¸ªèŠ‚ç‚¹ä½ç½®ï¼Œä»¥row_colå­—ç¬¦ä¸²è¡¨ç¤º
 	 * 
 	 * @param rows
 	 * @param cols

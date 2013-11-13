@@ -27,7 +27,7 @@ public class FGame {
 		this.rcs = new int[rows][cols];
 		this.colorCount = colorCount;
 		this.emptyCount = emptyCount;
-		// ³õÊ¼»¯ÓÎÏ·²¼¾Ö
+		// åˆå§‹åŒ–æ¸¸æˆå¸ƒå±€
 		initGame();
 
 		this.score = 0;
@@ -45,7 +45,7 @@ public class FGame {
 	}
 	
 	/**
-	 * ³õÊ¼»¯ÓÎÏ·²¼¾Ö£¬¿Õ°×ºÍ·Ç¿Õ°×µÈ
+	 * åˆå§‹åŒ–æ¸¸æˆå¸ƒå±€ï¼Œç©ºç™½å’Œéç©ºç™½ç­‰
 	 */
 	private void initGame() {
 		Set<String> emptySet = FGameUtil.getEmptyPosSet(rows, cols, emptyCount);
@@ -64,11 +64,11 @@ public class FGame {
 	}
 
 	/**
-	 * µã»÷X£¬YÎ»ÖÃ£¬´¦Àí²¢·µ»Ø½á¹û
+	 * ç‚¹å‡»Xï¼ŒYä½ç½®ï¼Œå¤„ç†å¹¶è¿”å›ç»“æœ
 	 * 
 	 * @param x
 	 * @param y
-	 * @return -1 ²»¿ÉÍæÓÎÏ·(»ò²»ÕıÈ·µÄË÷Òı)£¬0µã»÷Îª·Ç¿Õ´¦£¬1µã»÷Ã»ÓĞÈÎºÎÏû³ı£¬2µã»÷ÓĞÏû³ı²¢µÃ·Ö
+	 * @return -1 ä¸å¯ç©æ¸¸æˆ(æˆ–ä¸æ­£ç¡®çš„ç´¢å¼•)ï¼Œ0ç‚¹å‡»ä¸ºéç©ºå¤„ï¼Œ1ç‚¹å‡»æ²¡æœ‰ä»»ä½•æ¶ˆé™¤ï¼Œ2ç‚¹å‡»æœ‰æ¶ˆé™¤å¹¶å¾—åˆ†
 	 */
 	public int click(int x, int y) {
 		if (x < 0 || x >= rows || y < 0 || y > cols) {
@@ -78,23 +78,23 @@ public class FGame {
 			return 0;
 		}
 
-		// »ñÈ¡×î½ü·Ç¿Õ½Úµã¼¯
+		// è·å–æœ€è¿‘éç©ºèŠ‚ç‚¹é›†
 		List<int[]> nearNodes = getNearNotEmptyNodes(x, y);
-		// ¼ÆËã¿ÉÒÔ±»Ïû³ıµÄ½Úµã
+		// è®¡ç®—å¯ä»¥è¢«æ¶ˆé™¤çš„èŠ‚ç‚¹
 		List<int[]> clearNodes = getNeedClearNodes(nearNodes);
 
 		if (clearNodes == null) {
 			return 1;
 		}
 
-		// ÓĞĞèÒªÏû³ıµÄ½Úµã
+		// æœ‰éœ€è¦æ¶ˆé™¤çš„èŠ‚ç‚¹
 		clearMatchedNodes(clearNodes);
 
 		return 2;
 	}
 
 	/**
-	 * »ñÈ¡½Úµãx,y´¦ÉÏÏÂ×óÓÒ×î½üµÄÒ»¸ö·Ç¿Õ½Úµã¼¯£¬Èç¹ûÊÇ±ßÔµµÄ»°¾Í²»Ìí¼Óµ½½á¹û¼¯
+	 * è·å–èŠ‚ç‚¹x,yå¤„ä¸Šä¸‹å·¦å³æœ€è¿‘çš„ä¸€ä¸ªéç©ºèŠ‚ç‚¹é›†ï¼Œå¦‚æœæ˜¯è¾¹ç¼˜çš„è¯å°±ä¸æ·»åŠ åˆ°ç»“æœé›†
 	 * 
 	 * @param x
 	 * @param y
@@ -105,7 +105,7 @@ public class FGame {
 		int tx = x;
 		int ty = y;
 
-		// ×ó±ßµÄ½Úµã
+		// å·¦è¾¹çš„èŠ‚ç‚¹
 		do {
 			tx--;
 		} while (tx > 0 && rcs[tx][ty] == 0);
@@ -113,7 +113,7 @@ public class FGame {
 			nodes.add(new int[] { tx, ty });
 		}
 
-		// ÓÒ±ßµÄ½Úµã
+		// å³è¾¹çš„èŠ‚ç‚¹
 		tx = x;
 		ty = y;
 		do {
@@ -123,7 +123,7 @@ public class FGame {
 			nodes.add(new int[] { tx, ty });
 		}
 
-		// ÏÂ±ßµÄ½Úµã
+		// ä¸‹è¾¹çš„èŠ‚ç‚¹
 		tx = x;
 		ty = y;
 		do {
@@ -133,7 +133,7 @@ public class FGame {
 			nodes.add(new int[] { tx, ty });
 		}
 
-		// ÉÏ±ßµÄ½Úµã
+		// ä¸Šè¾¹çš„èŠ‚ç‚¹
 		tx = x;
 		ty = y;
 		do {
@@ -147,16 +147,16 @@ public class FGame {
 	}
 
 	/**
-	 * ¼ÆËãÄÄĞ©½Úµã¿ÉÒÔ±»Ïû³ı£¬²¢·µ»Ø¿ÉÒÔ±»Ïû³ıµÄ½Úµã£¬Èç¹ûÃ»ÓĞ¿É±»Ïû³ıµÄ·µ»Ønull
+	 * è®¡ç®—å“ªäº›èŠ‚ç‚¹å¯ä»¥è¢«æ¶ˆé™¤ï¼Œå¹¶è¿”å›å¯ä»¥è¢«æ¶ˆé™¤çš„èŠ‚ç‚¹ï¼Œå¦‚æœæ²¡æœ‰å¯è¢«æ¶ˆé™¤çš„è¿”å›null
 	 * 
 	 * @param nodes
 	 * @return
 	 */
 	private List<int[]> getNeedClearNodes(List<int[]> nodes) {
 
-		// ½Úµã·ÖÀà£¬½«ÏàÍ¬ÑÕÉ«µÄ½Úµã·ÖÀàµ½Í¬Ò»¸öKEYÏÂÃæ
+		// èŠ‚ç‚¹åˆ†ç±»ï¼Œå°†ç›¸åŒé¢œè‰²çš„èŠ‚ç‚¹åˆ†ç±»åˆ°åŒä¸€ä¸ªKEYä¸‹é¢
 		SparseArray<List<int[]>> classNodes = new SparseArray<List<int[]>>(4);
-		// °´key(ÑÕÉ«)£¬value(´æ´¢´ËÑÕÉ«µÄËùÓĞ×ø±êint[]µÄlist)
+		// æŒ‰key(é¢œè‰²)ï¼Œvalue(å­˜å‚¨æ­¤é¢œè‰²çš„æ‰€æœ‰åæ ‡int[]çš„list)
 		for (int[] node : nodes) {
 			int color = getRC(node);
 			if (classNodes.get(color) == null) {
@@ -165,12 +165,12 @@ public class FGame {
 			classNodes.get(color).add(node);
 		}
 
-		// ¸ù¾İ·ÖÀàÅĞ¶ÏÄÄĞ©½Úµã¿ÉÒÔ±»Ïû³ı
+		// æ ¹æ®åˆ†ç±»åˆ¤æ–­å“ªäº›èŠ‚ç‚¹å¯ä»¥è¢«æ¶ˆé™¤
 		List<int[]> needClearNodes = null;
 		for (int i = 1; i < colorCount + 1; i++) {
 			if (classNodes.indexOfKey(i) >= 0) {
 				if (classNodes.get(i).size() > 1) {
-					// Èç¹ûÎªnullÔò³õÊ¼»¯Ò»ÏÂ
+					// å¦‚æœä¸ºnullåˆ™åˆå§‹åŒ–ä¸€ä¸‹
 					if (needClearNodes == null) {
 						needClearNodes = new ArrayList<int[]>(4);
 					}
@@ -183,7 +183,7 @@ public class FGame {
 	}
 
 	/**
-	 * Ïû³ıÖ¸¶¨µÄ½ÚµãÊı¾İ
+	 * æ¶ˆé™¤æŒ‡å®šçš„èŠ‚ç‚¹æ•°æ®
 	 * 
 	 * @param clearNodes
 	 */

@@ -26,49 +26,49 @@ import com.think.game.f.FGame;
 import com.think.game.f.FGameUtil;
 
 /**
- * FGame¿ØÖÆÖ÷Àà
+ * FGameæ§åˆ¶ä¸»ç±»
  * 
  * @author gudh
  * @date 2013-11-12
  */
 public class FGameAct implements ApplicationListener {
 
-	// ´æ´¢ËùÓĞÑÕÉ«¶ÔÏó
+	// å­˜å‚¨æ‰€æœ‰é¢œè‰²å¯¹è±¡
 	private static Texture[] texts;
 	private static Image[] rects;
 
-	// ÓÎÏ·²ÎÊı
+	// æ¸¸æˆå‚æ•°
 	public FGameParameter para;
 
-	// »æÍ¼×ÊÔ´
+	// ç»˜å›¾èµ„æº
 	private SpriteBatch batch;
 	private Stage stage;
 	private BitmapFont font;
 	private Skin skin;
 
-	// ÓÎÏ·ÊµÀı
+	// æ¸¸æˆå®ä¾‹
 	private FGame fgame;
 
-	// ¿Ø¼ş
+	// æ§ä»¶
 	Label lab;
 	TextButton btn1;
 	TextButton btn2;
-	// ´æ´¢Ã¿¸öÇø¿é
+	// å­˜å‚¨æ¯ä¸ªåŒºå—
 	private Image[][] gameArea;
 
-	// ±êÖ¾ÊÇ·ñµÚÒ»´Î¼ÓÔØ
+	// æ ‡å¿—æ˜¯å¦ç¬¬ä¸€æ¬¡åŠ è½½
 	private boolean isInit = false;
 
 	public FGameAct() {
-		// ³õÊ¼»¯ÓÎÏ·ÊµÀı
+		// åˆå§‹åŒ–æ¸¸æˆå®ä¾‹
 		fgame = new FGame(10, 16, 5, 25);
 	}
 
 	/**
-	 * ³õÊ¼»¯×ÊÔ´ĞÅÏ¢
+	 * åˆå§‹åŒ–èµ„æºä¿¡æ¯
 	 */
 	private void initproperties() {
-		// ³õÊ¼»¯ÑÕÉ«
+		// åˆå§‹åŒ–é¢œè‰²
 		int length = FGameUtil.getAllColors().length;
 		texts = new Texture[length];
 		rects = new Image[length];
@@ -81,7 +81,7 @@ public class FGameAct implements ApplicationListener {
 			rects[i] = new Image(texts[i]);
 		}
 
-		// ³õÊ¼»¯fontºÍskinÎÄ¼ş
+		// åˆå§‹åŒ–fontå’Œskinæ–‡ä»¶
 		font = new BitmapFont(Gdx.files.internal("default.fnt"),
 				Gdx.files.internal("default.png"), false);
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -89,7 +89,7 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ÉèÖÃ¿Ø¼şµÄÎ»ÖÃ
+	 * è®¾ç½®æ§ä»¶çš„ä½ç½®
 	 * @param obj
 	 * @param bound
 	 */
@@ -108,7 +108,7 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ¸ù¾İx,y»ñÈ¡Image£¬²¢ÉèÖÃºÃÎ»ÖÃºÍ´óĞ¡
+	 * æ ¹æ®x,yè·å–Imageï¼Œå¹¶è®¾ç½®å¥½ä½ç½®å’Œå¤§å°
 	 * 
 	 * @param x
 	 * @param y
@@ -117,7 +117,7 @@ public class FGameAct implements ApplicationListener {
 	private Image getNewImageByPos(int x, int y) {
 		int index = fgame.getRcs()[x][y];
 		Image m = new Image(texts[index]);
-		// m¿ÉÄÜĞèÒªcloneÒ»ÏÂ
+		// må¯èƒ½éœ€è¦cloneä¸€ä¸‹
 
 		float xx = para.getGameBound().getX() + x * para.getRectSize()[0];
 		float yy = para.getGameBound().getY() + y * para.getRectSize()[1];
@@ -127,7 +127,7 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ¸üĞÂÄ³¸öÎ»ÖÃµÄÑÕÉ«
+	 * æ›´æ–°æŸä¸ªä½ç½®çš„é¢œè‰²
 	 * 
 	 * @param x
 	 * @param y
@@ -139,7 +139,7 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ¸üĞÂµÃ·Ö
+	 * æ›´æ–°å¾—åˆ†
 	 * 
 	 * @param score
 	 */
@@ -149,7 +149,7 @@ public class FGameAct implements ApplicationListener {
 
 	public void playOnce(int x, int y) {
 		int res = fgame.click(x, y);
-		Log.i("PlayResult", "ÍæÓÎÏ·½á¹û£º" + res);
+		Log.i("PlayResult", "ç©æ¸¸æˆç»“æœï¼š" + res);
 		if (res == 2) {
 			for (int i = 0; i < fgame.getRows(); i++) {
 				for (int j = 0; j < fgame.getCols(); j++) {
@@ -161,10 +161,10 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ³õÊ¼»¯ÓÎÏ·ĞÅÏ¢
+	 * åˆå§‹åŒ–æ¸¸æˆä¿¡æ¯
 	 */
 	private void initGame(int rows, int cols) {
-		// ¼ÓÔØ²ÎÊı
+		// åŠ è½½å‚æ•°
 		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
 
 		batch = new SpriteBatch();
@@ -180,7 +180,7 @@ public class FGameAct implements ApplicationListener {
 		setBound(btn2, para.getBtn2Bound());
 		stage.addActor(btn2);
 
-		lab = new Label("Come on!\n\nScore£º 0", new LabelStyle(font, Color.RED));
+		lab = new Label("Come on!\n\nScoreï¼š 0", new LabelStyle(font, Color.RED));
 		setBound(lab, para.getLabelBound());
 		stage.addActor(lab);
 
@@ -196,15 +196,15 @@ public class FGameAct implements ApplicationListener {
 	@Override
 	public void create() {
 		if (!isInit) {
-			// µÚÒ»´Î¼ÓÔØÊ±³õÊ¼»¯×ÊÔ´ĞÅÏ¢
+			// ç¬¬ä¸€æ¬¡åŠ è½½æ—¶åˆå§‹åŒ–èµ„æºä¿¡æ¯
 			initproperties();
 			isInit = true;
 		}
 
-		// ³õÊ¼»¯ÓÎÏ·
+		// åˆå§‹åŒ–æ¸¸æˆ
 		initGame(23, 32);
 
-		// Ìí¼ÓÊÂ¼ş
+		// æ·»åŠ äº‹ä»¶
 		Gdx.input.setInputProcessor(new FGameInputProcessor(this));
 	}
 
@@ -221,7 +221,7 @@ public class FGameAct implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		// »æÍ¼
+		// ç»˜å›¾
 		stage.draw();
 	}
 
