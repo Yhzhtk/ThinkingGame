@@ -100,6 +100,8 @@ public class FGameAct implements ApplicationListener {
 		if (res == 2) {
 			// 重绘界面
 			repaint();
+		}
+		if(res > 0){
 			// 更新游戏得分
 			updateScore(fgame.getScore());
 		}

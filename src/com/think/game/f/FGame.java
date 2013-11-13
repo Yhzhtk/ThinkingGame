@@ -22,10 +22,10 @@ public class FGame {
 	private int emptyCount = 10;
 	private int score = 0;
 
-	public FGame(){
+	public FGame() {
 		this(10, 16, 5, 25);
 	}
-	
+
 	public FGame(int rows, int cols, int colorCount, int emptyCount) {
 		this.rows = rows;
 		this.cols = cols;
@@ -41,17 +41,17 @@ public class FGame {
 	/**
 	 * 打印当前布局，左下角是0, 0
 	 */
-	public void printLayout(){
+	public void printLayout() {
 		System.out.println("=======================");
-		for(int j = rows - 1; j >= 0; j--){
-			for(int i = 0; i < cols; i++){
+		for (int j = rows - 1; j >= 0; j--) {
+			for (int i = 0; i < cols; i++) {
 				System.out.print(rcs[i][j] + " ");
 			}
 			System.out.println();
 		}
 		System.out.println("=======================");
 	}
-	
+
 	/**
 	 * 初始化游戏布局，空白和非空白等
 	 */
@@ -90,6 +90,9 @@ public class FGame {
 		List<int[]> clearNodes = getNeedClearNodes(nearNodes);
 
 		if (clearNodes == null) {
+			// 点错 得分减10
+			score -= 48;
+			score = score < 0 ? 0 : score;
 			return 1;
 		}
 
@@ -194,14 +197,15 @@ public class FGame {
 	 * @param clearNodes
 	 */
 	private void clearMatchedNodes(List<int[]> clearNodes) {
-		int base = 1;
-		for(int[] node : clearNodes){
+		int base = 0;
+		for (int[] node : clearNodes) {
 			setRC(node, 0);
-			score += base;
 			base++;
 		}
+		// 得分是消除数的平方
+		score += base * base * 3;
 	}
-	
+
 	private void setRC(int[] rc, int value) {
 		rcs[rc[0]][rc[1]] = value;
 	}
