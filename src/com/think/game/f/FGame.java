@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -23,6 +22,10 @@ public class FGame {
 	private int emptyCount = 10;
 	private int score = 0;
 
+	public FGame(){
+		this(10, 16, 5, 25);
+	}
+	
 	public FGame(int rows, int cols, int colorCount, int emptyCount) {
 		this.rows = rows;
 		this.cols = cols;
@@ -59,10 +62,8 @@ public class FGame {
 				if (emptySet.contains(new StringBuilder().append(i).append("_")
 						.append(j).toString())) {
 					rcs[i][j] = 0;
-					Log.d("InitColor", FGameUtil.getColor(0).toString());
 				} else {
 					rcs[i][j] = FGameUtil.getNextColorIndex(colorCount);
-					Log.d("InitColor", FGameUtil.getColor(rcs[i][j]).toString());
 				}
 			}
 		}

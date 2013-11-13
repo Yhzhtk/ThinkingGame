@@ -34,6 +34,7 @@ import com.think.game.f.FGameUtil;
 public class FGameAct implements ApplicationListener {
 
 	// 存储所有颜色对象
+	private static Pixmap[] pixs;
 	private static Texture[] texts;
 	private static Image[] rects;
 
@@ -60,7 +61,7 @@ public class FGameAct implements ApplicationListener {
 
 	public FGameAct() {
 		// 初始化游戏实例
-		fgame = new FGame(10, 16, 5, 25);
+		fgame = new FGame();
 	}
 
 	/**
@@ -69,14 +70,15 @@ public class FGameAct implements ApplicationListener {
 	private void initProperties() {
 		// 初始化颜色
 		int length = FGameUtil.getAllColors().length;
+		pixs = new Pixmap[length];
 		texts = new Texture[length];
 		rects = new Image[length];
 
 		for (int i = 0; i < length; i++) {
-			Pixmap p = new Pixmap(2, 2, Format.RGBA8888);
-			p.setColor(FGameUtil.getAllColors()[i]);
-			p.fillRectangle(0, 0, 2, 2);
-			texts[i] = new Texture(p, false);
+			pixs[i] = new Pixmap(2, 2, Format.RGBA8888);
+			pixs[i].setColor(FGameUtil.getAllColors()[i]);
+			pixs[i].fillRectangle(0, 0, 2, 2);
+			texts[i] = new Texture(pixs[i], false);
 			rects[i] = new Image(texts[i]);
 		}
 
@@ -86,10 +88,9 @@ public class FGameAct implements ApplicationListener {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 	}
 
-	
-
 	/**
 	 * 玩一次游戏，参数为坐标（左下角为0，0）
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -97,11 +98,8 @@ public class FGameAct implements ApplicationListener {
 		int res = fgame.click(x, y);
 		Log.i("PlayResult", "玩游戏结果：" + res);
 		if (res == 2) {
-			for (int i = 0; i < fgame.getRows(); i++) {
-				for (int j = 0; j < fgame.getCols(); j++) {
-					updateImage(i, j);
-				}
-			}
+			// 重绘界面
+			repaint();
 			// 更新游戏得分
 			updateScore(fgame.getScore());
 		}
@@ -109,14 +107,16 @@ public class FGameAct implements ApplicationListener {
 
 	/**
 	 * 以指定行列初始化游戏信息，开始游戏时初始化
-	 * @param fgame 以fgame初始化数据
+	 * 
+	 * @param fgame
+	 *            以fgame初始化数据
 	 */
 	public void initGame(FGame fgame) {
 		// 将fgame置为全局
-		if(this.fgame != fgame){
+		if (this.fgame != fgame) {
 			this.fgame = fgame;
 		}
-		
+
 		// 加载参数
 		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
 
@@ -159,14 +159,18 @@ public class FGameAct implements ApplicationListener {
 
 		// 添加事件
 		Gdx.input.setInputProcessor(new FGameInputProcessor(this));
+
+		Log.d("GdxEvent", "create");
 	}
 
 	@Override
 	public void dispose() {
+		Log.d("GdxEvent", "dispose");
 	}
 
 	@Override
 	public void pause() {
+		Log.d("GdxEvent", "pause");
 	}
 
 	@Override
@@ -180,14 +184,34 @@ public class FGameAct implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
+		Log.d("GdxEvent", "resize " + width + " " + height);
 	}
 
 	@Override
 	public void resume() {
+		// 当pause时EGL的资源被销毁，resume时需要加载
+		for (int i = 0; i < FGameUtil.getAllColors().length; i++) {
+			texts[i] = new Texture(pixs[i], false);
+			rects[i] = new Image(texts[i]);
+		}
+		repaint();
+		Log.d("GdxEvent", "resume");
 	}
-	
+
+	/**
+	 * 重绘界面
+	 */
+	private void repaint() {
+		for (int i = 0; i < fgame.getRows(); i++) {
+			for (int j = 0; j < fgame.getCols(); j++) {
+				updateImage(i, j);
+			}
+		}
+	}
+
 	/**
 	 * 利用反射设置控件的位置和大小
+	 * 
 	 * @param obj
 	 * @param bound
 	 */
