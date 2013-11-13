@@ -18,7 +18,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -37,6 +36,8 @@ public class FGameAct implements ApplicationListener {
 	private static Pixmap[] pixs;
 	private static Texture[] texts;
 	private static Image[] rects;
+	private static TextureRegionDrawable btnDraw;
+	private static Texture backText;
 
 	// 游戏参数
 	public FGameParameter para;
@@ -45,7 +46,7 @@ public class FGameAct implements ApplicationListener {
 	private SpriteBatch batch;
 	private Stage stage;
 	private BitmapFont font;
-	private Skin skin;
+	//private Skin skin;
 
 	// 游戏实例
 	private FGame fgame;
@@ -85,7 +86,11 @@ public class FGameAct implements ApplicationListener {
 		// 初始化font和skin文件
 		font = new BitmapFont(Gdx.files.internal("default.fnt"),
 				Gdx.files.internal("default.png"), false);
-		skin = new Skin(Gdx.files.internal("uiskin.json"));
+		//skin = new Skin(Gdx.files.internal("uiskin.json"));
+		
+		// 初始化背景
+		btnDraw = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("btn.png"))));
+		backText =new Texture(Gdx.files.internal("back.png"));
 	}
 
 	/**
@@ -101,7 +106,7 @@ public class FGameAct implements ApplicationListener {
 			// 重绘界面
 			repaint();
 		}
-		if(res > 0){
+		if (res > 0) {
 			// 更新游戏得分
 			updateScore(fgame.getScore());
 		}
@@ -125,16 +130,22 @@ public class FGameAct implements ApplicationListener {
 		batch = new SpriteBatch();
 		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
 				batch);
-
+		
+		Image back = new Image(backText);
+		back.setSize(para.getScreenWidth(), para.getScreenHeight());
+		stage.addActor(back);
+		
 		// 添加按钮和标签
-		btn1 = new TextButton("Start", skin);
+		TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(btnDraw, btnDraw, btnDraw, font);
+
+		btn1 = new TextButton("Start", btnStyle);
 		setBound(btn1, para.getBtn1Bound());
 		stage.addActor(btn1);
 
-		btn2 = new TextButton("Pause", skin);
+		btn2 = new TextButton("Pause", btnStyle);
 		setBound(btn2, para.getBtn2Bound());
 		stage.addActor(btn2);
-
+		
 		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
 		setBound(lab, para.getLabelBound());
 		stage.addActor(lab);
