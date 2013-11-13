@@ -26,70 +26,192 @@ import com.think.game.f.FGame;
 import com.think.game.f.FGameUtil;
 
 /**
- * FGame¿ØÖÆÖ÷Àà
+ * FGameæ§åˆ¶ä¸»ç±»
  * 
  * @author gudh
  * @date 2013-11-12
  */
 public class FGameAct implements ApplicationListener {
 
-	// ´æ´¢ËùÓĞÑÕÉ«¶ÔÏó
+	// å­˜å‚¨æ‰€æœ‰é¢œè‰²å¯¹è±¡
+	private static Pixmap[] pixs;
 	private static Texture[] texts;
 	private static Image[] rects;
 
-	// ÓÎÏ·²ÎÊı
+	// æ¸¸æˆå‚æ•°
 	public FGameParameter para;
 
-	// »æÍ¼×ÊÔ´
+	// ç»˜å›¾èµ„æº
 	private SpriteBatch batch;
 	private Stage stage;
 	private BitmapFont font;
 	private Skin skin;
 
-	// ÓÎÏ·ÊµÀı
+	// æ¸¸æˆå®ä¾‹
 	private FGame fgame;
 
-	// ¿Ø¼ş
-	Label lab;
-	TextButton btn1;
-	TextButton btn2;
-	// ´æ´¢Ã¿¸öÇø¿é
-	private Image[][] gameArea;
+	// æ§ä»¶
+	Label lab; // å¾—åˆ†æ ‡ç­¾
+	TextButton btn1; // æŒ‰é’®1
+	TextButton btn2; // æŒ‰é’®2
+	private Image[][] gameArea; // å­˜å‚¨æ¯ä¸ªåŒºå—
 
-	// ±êÖ¾ÊÇ·ñµÚÒ»´Î¼ÓÔØ
+	// æ ‡å¿—æ˜¯å¦ç¬¬ä¸€æ¬¡åŠ è½½
 	private boolean isInit = false;
 
 	public FGameAct() {
-		// ³õÊ¼»¯ÓÎÏ·ÊµÀı
-		fgame = new FGame(10, 16, 5, 25);
+		// åˆå§‹åŒ–æ¸¸æˆå®ä¾‹
+		fgame = new FGame();
 	}
 
 	/**
-	 * ³õÊ¼»¯×ÊÔ´ĞÅÏ¢
+	 * åˆå§‹åŒ–èµ„æºä¿¡æ¯ï¼Œåªéœ€ä¸€æ¬¡ï¼Œåœ¨ç¬¬ä¸€æ¬¡åŠ è½½æ—¶
 	 */
-	private void initproperties() {
-		// ³õÊ¼»¯ÑÕÉ«
+	private void initProperties() {
+		// åˆå§‹åŒ–é¢œè‰²
 		int length = FGameUtil.getAllColors().length;
+		pixs = new Pixmap[length];
 		texts = new Texture[length];
 		rects = new Image[length];
 
 		for (int i = 0; i < length; i++) {
-			Pixmap p = new Pixmap(2, 2, Format.RGBA8888);
-			p.setColor(FGameUtil.getAllColors()[i]);
-			p.fillRectangle(0, 0, 2, 2);
-			texts[i] = new Texture(p, false);
+			pixs[i] = new Pixmap(2, 2, Format.RGBA8888);
+			pixs[i].setColor(FGameUtil.getAllColors()[i]);
+			pixs[i].fillRectangle(0, 0, 2, 2);
+			texts[i] = new Texture(pixs[i], false);
 			rects[i] = new Image(texts[i]);
 		}
 
-		// ³õÊ¼»¯fontºÍskinÎÄ¼ş
+		// åˆå§‹åŒ–fontå’Œskinæ–‡ä»¶
 		font = new BitmapFont(Gdx.files.internal("default.fnt"),
 				Gdx.files.internal("default.png"), false);
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
-
 	}
 
 	/**
-	 * ÉèÖÃ¿Ø¼şµÄÎ»ÖÃ
+	 * ç©ä¸€æ¬¡æ¸¸æˆï¼Œå‚æ•°ä¸ºåæ ‡ï¼ˆå·¦ä¸‹è§’ä¸º0ï¼Œ0ï¼‰
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void playOnce(int x, int y) {
+		int res = fgame.click(x, y);
+		Log.i("PlayResult", "ç©æ¸¸æˆç»“æœï¼š" + res);
+		if (res == 2) {
+			// é‡ç»˜ç•Œé¢
+			repaint();
+			// æ›´æ–°æ¸¸æˆå¾—åˆ†
+			updateScore(fgame.getScore());
+		}
+	}
+
+	/**
+	 * ä»¥æŒ‡å®šè¡Œåˆ—åˆå§‹åŒ–æ¸¸æˆä¿¡æ¯ï¼Œå¼€å§‹æ¸¸æˆæ—¶åˆå§‹åŒ–
+	 * 
+	 * @param fgame
+	 *            ä»¥fgameåˆå§‹åŒ–æ•°æ®
+	 */
+	public void initGame(FGame fgame) {
+		// å°†fgameç½®ä¸ºå…¨å±€
+		if (this.fgame != fgame) {
+			this.fgame = fgame;
+		}
+
+		// åŠ è½½å‚æ•°
+		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
+
+		batch = new SpriteBatch();
+		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
+				batch);
+
+		// æ·»åŠ æŒ‰é’®å’Œæ ‡ç­¾
+		btn1 = new TextButton("Start", skin);
+		setBound(btn1, para.getBtn1Bound());
+		stage.addActor(btn1);
+
+		btn2 = new TextButton("Pause", skin);
+		setBound(btn2, para.getBtn2Bound());
+		stage.addActor(btn2);
+
+		lab = new Label("Come on!\n\nScoreï¼š 0", new LabelStyle(font, Color.RED));
+		setBound(lab, para.getLabelBound());
+		stage.addActor(lab);
+
+		gameArea = new Image[para.getRows()][para.getCols()];
+		for (int i = 0; i < para.getRows(); i++) {
+			for (int j = 0; j < para.getCols(); j++) {
+				gameArea[i][j] = getImageByPos(i, j);
+				stage.addActor(gameArea[i][j]);
+			}
+		}
+	}
+
+	@Override
+	public void create() {
+		if (!isInit) {
+			// ç¬¬ä¸€æ¬¡åŠ è½½æ—¶åˆå§‹åŒ–èµ„æºä¿¡æ¯
+			initProperties();
+			isInit = true;
+		}
+
+		// åˆå§‹åŒ–æ¸¸æˆ
+		initGame(this.fgame);
+
+		// æ·»åŠ äº‹ä»¶
+		Gdx.input.setInputProcessor(new FGameInputProcessor(this));
+
+		Log.d("GdxEvent", "create");
+	}
+
+	@Override
+	public void dispose() {
+		Log.d("GdxEvent", "dispose");
+	}
+
+	@Override
+	public void pause() {
+		Log.d("GdxEvent", "pause");
+	}
+
+	@Override
+	public void render() {
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+		// ç»˜å›¾
+		stage.draw();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		Log.d("GdxEvent", "resize " + width + " " + height);
+	}
+
+	@Override
+	public void resume() {
+		// å½“pauseæ—¶EGLçš„èµ„æºè¢«é”€æ¯ï¼Œresumeæ—¶éœ€è¦åŠ è½½
+		for (int i = 0; i < FGameUtil.getAllColors().length; i++) {
+			texts[i] = new Texture(pixs[i], false);
+			rects[i] = new Image(texts[i]);
+		}
+		repaint();
+		Log.d("GdxEvent", "resume");
+	}
+
+	/**
+	 * é‡ç»˜ç•Œé¢
+	 */
+	private void repaint() {
+		for (int i = 0; i < fgame.getRows(); i++) {
+			for (int j = 0; j < fgame.getCols(); j++) {
+				updateImage(i, j);
+			}
+		}
+	}
+
+	/**
+	 * åˆ©ç”¨åå°„è®¾ç½®æ§ä»¶çš„ä½ç½®å’Œå¤§å°
+	 * 
 	 * @param obj
 	 * @param bound
 	 */
@@ -108,17 +230,16 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ¸ù¾İx,y»ñÈ¡Image£¬²¢ÉèÖÃºÃÎ»ÖÃºÍ´óĞ¡
+	 * æ ¹æ®x,yè·å–Imageï¼Œå¹¶è®¾ç½®å¥½ä½ç½®å’Œå¤§å°
 	 * 
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	private Image getNewImageByPos(int x, int y) {
+	private Image getImageByPos(int x, int y) {
 		int index = fgame.getRcs()[x][y];
+		// ä»textä¸­ç”Ÿæˆä¸€ä¸ªImageå¯¹è±¡
 		Image m = new Image(texts[index]);
-		// m¿ÉÄÜĞèÒªcloneÒ»ÏÂ
-
 		float xx = para.getGameBound().getX() + x * para.getRectSize()[0];
 		float yy = para.getGameBound().getY() + y * para.getRectSize()[1];
 		m.setPosition(xx, yy);
@@ -127,109 +248,23 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * ¸üĞÂÄ³¸öÎ»ÖÃµÄÑÕÉ«
+	 * æ›´æ–°æŸä¸ªä½ç½®çš„é¢œè‰²
 	 * 
 	 * @param x
 	 * @param y
 	 */
-	private void updatePos(int x, int y) {
+	private void updateImage(int x, int y) {
 		int index = fgame.getRcs()[x][y];
 		gameArea[x][y].setDrawable(new TextureRegionDrawable(new TextureRegion(
 				texts[index])));
 	}
 
 	/**
-	 * ¸üĞÂµÃ·Ö
+	 * æ›´æ–°å¾—åˆ†
 	 * 
 	 * @param score
 	 */
 	private void updateScore(int score) {
 		lab.setText("Come on!\n\nScore: " + score);
-	}
-
-	public void playOnce(int x, int y) {
-		int res = fgame.click(x, y);
-		Log.i("PlayResult", "ÍæÓÎÏ·½á¹û£º" + res);
-		if (res == 2) {
-			for (int i = 0; i < fgame.getRows(); i++) {
-				for (int j = 0; j < fgame.getCols(); j++) {
-					updatePos(i, j);
-				}
-			}
-			updateScore(fgame.getScore());
-		}
-	}
-
-	/**
-	 * ³õÊ¼»¯ÓÎÏ·ĞÅÏ¢
-	 */
-	private void initGame(int rows, int cols) {
-		// ¼ÓÔØ²ÎÊı
-		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
-
-		batch = new SpriteBatch();
-
-		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
-				batch);
-
-		btn1 = new TextButton("Start", skin);
-		setBound(btn1, para.getBtn1Bound());
-		stage.addActor(btn1);
-
-		btn2 = new TextButton("Pause", skin);
-		setBound(btn2, para.getBtn2Bound());
-		stage.addActor(btn2);
-
-		lab = new Label("Come on!\n\nScore£º 0", new LabelStyle(font, Color.RED));
-		setBound(lab, para.getLabelBound());
-		stage.addActor(lab);
-
-		gameArea = new Image[para.getRows()][para.getCols()];
-		for (int i = 0; i < para.getRows(); i++) {
-			for (int j = 0; j < para.getCols(); j++) {
-				gameArea[i][j] = getNewImageByPos(i, j);
-				stage.addActor(gameArea[i][j]);
-			}
-		}
-	}
-
-	@Override
-	public void create() {
-		if (!isInit) {
-			// µÚÒ»´Î¼ÓÔØÊ±³õÊ¼»¯×ÊÔ´ĞÅÏ¢
-			initproperties();
-			isInit = true;
-		}
-
-		// ³õÊ¼»¯ÓÎÏ·
-		initGame(23, 32);
-
-		// Ìí¼ÓÊÂ¼ş
-		Gdx.input.setInputProcessor(new FGameInputProcessor(this));
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void render() {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
-		// »æÍ¼
-		stage.draw();
-	}
-
-	@Override
-	public void resize(int width, int height) {
-	}
-
-	@Override
-	public void resume() {
 	}
 }

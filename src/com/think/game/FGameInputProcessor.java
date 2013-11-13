@@ -5,7 +5,7 @@ import android.util.Log;
 import com.badlogic.gdx.InputProcessor;
 
 /**
- * FGameÊÂ¼ş´¦Àí
+ * FGameäº‹ä»¶å¤„ç†
  * @author gudh
  * @date 2013-11-12
  */
@@ -36,7 +36,7 @@ public class FGameInputProcessor implements InputProcessor {
 	}
 
 	/**
-	 * ÏìÓ¦TouchUpÊÂ¼ş
+	 * å“åº”TouchUpäº‹ä»¶
 	 * 
 	 * @param arg0
 	 * @param arg1
@@ -45,18 +45,18 @@ public class FGameInputProcessor implements InputProcessor {
 	 * @return
 	 */
 	public boolean actEventTouchUp(int arg0, int arg1, int arg2, int arg3) {
-		// yÖá×ª»»
+		// yè½´è½¬æ¢
 		arg1 = height - arg1;
-		Log.d("Event", "×ª»»ºóµÄ×ø±ê:" + arg0 + " " + arg1);
+		Log.d("Event", "è½¬æ¢åçš„åæ ‡:" + arg0 + " " + arg1);
 
 		if (arg0 < x1 || arg0 > x2 || arg1 < y1 || arg1 > y2) {
-			Log.i("Event", "²»ÔÚÓÎÏ·Çø");
-			// ´¦Àí¿ªÊ¼°´Å¥
+			Log.i("Event", "ä¸åœ¨æ¸¸æˆåŒº");
+			// å¤„ç†å¼€å§‹æŒ‰é’®
 
 		} else {
 			int x = (arg0 - x1) / pw;
 			int y = (arg1 - y1) / ph;
-			Log.i("Event", "µã»÷ £º " + x + " " + y);
+			Log.i("Event", "ç‚¹å‡» ï¼š " + x + " " + y);
 			fGame.playOnce(x, y);
 			return true;
 		}

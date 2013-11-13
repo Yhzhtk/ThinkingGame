@@ -3,7 +3,7 @@ package com.think.game.f;
 import java.util.Scanner;
 
 /**
- * ²âÊÔ·½·¨
+ * æµ‹è¯•æ–¹æ³•
  * @author gudh
  * @date 2013-11-11
  */

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
- * ´æ´¢FGameµÄÓÎÏ·²ÎÊı
+ * å­˜å‚¨FGameçš„æ¸¸æˆå‚æ•°
  * 
  * @author gudh
  * @date 2013-11-12
