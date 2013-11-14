@@ -17,8 +17,8 @@ public class FGameInputProcessor implements InputProcessor {
 	private int y1;
 	private int x2;
 	private int y2;
-	private int pw;
-	private int ph;
+	private float pw;
+	private float ph;
 
 	private int height;
 
@@ -56,8 +56,8 @@ public class FGameInputProcessor implements InputProcessor {
 		if (arg0 < x1 || arg0 > x2 || arg1 < y1 || arg1 > y2) {
 			Log.i("Event", "不在游戏区");
 		} else {
-			int x = (arg0 - x1) / pw;
-			int y = (arg1 - y1) / ph;
+			int x = (int) ((arg0 - x1) / pw);
+			int y = (int) ((arg1 - y1) / ph);
 			Log.i("Event", "点击 ： " + x + " " + y);
 			fGame.playOnce(x, y);
 			return true;

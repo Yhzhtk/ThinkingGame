@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -38,7 +39,7 @@ public class FGameAct implements ApplicationListener {
 
 	// 标志系统像素等
 	private DisplayMetrics metric;
-	
+
 	// 存储所有颜色对象
 	private static String[] imgPaths;
 	private static Texture[] texts;
@@ -47,6 +48,8 @@ public class FGameAct implements ApplicationListener {
 	private static TextureRegionDrawable btnDownDraw;
 	private static Texture backText;
 	private static Image processBar;
+	private static Table gameTab;
+	private static Table controlTab;
 
 	private static Music loopMusic;
 	private static Sound startSound;
@@ -89,7 +92,7 @@ public class FGameAct implements ApplicationListener {
 	public FGameAct(DisplayMetrics metric) {
 		this.metric = metric;
 		// 初始化游戏实例
-		fgame = new FGame();
+		fgame = new FGame(6, 6);
 	}
 
 	/**
@@ -130,7 +133,8 @@ public class FGameAct implements ApplicationListener {
 		backText = new Texture(Gdx.files.internal("back.png"));
 
 		// 加载参数
-		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols(), metric);
+		para = FGameParameter.getParaInstance(1, metric);
+		fgame = new FGame(para.getRows(), para.getCols());
 
 		batch = new SpriteBatch();
 		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
@@ -141,33 +145,40 @@ public class FGameAct implements ApplicationListener {
 		stage.addActor(back);
 
 		// 添加按钮和标签
+		controlTab = new Table();
+		setBound(controlTab, para.getControlBound());
+		stage.addActor(controlTab);
+
+		processBar = new Image(new Texture(Gdx.files.internal("process.png")));
+		controlTab.add(processBar).colspan(3).expandX().fillX().spaceBottom(para.getProcessBottomSpace());
+
+		controlTab.row();
+
 		TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(
 				btnUpDraw, btnDownDraw, btnDownDraw, font);
 
 		btn1 = new TextButton("Start", btnStyle);
-		setBound(btn1, para.getBtn1Bound());
-		stage.addActor(btn1);
+		controlTab.add(btn1).expandX().spaceLeft(para.getBtnLeftSpace()).fillX();
 
 		btn2 = new TextButton("Pause", btnStyle);
 		btn2.setDisabled(true);
-		setBound(btn2, para.getBtn2Bound());
-		stage.addActor(btn2);
+		controlTab.add(btn2).expandX().spaceLeft(para.getBtnLeftSpace()).fillX();
 
 		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
-		setBound(lab, para.getLabelBound());
-		stage.addActor(lab);
-
-		processBar = new Image(new Texture(Gdx.files.internal("process.png")));
-		setBound(processBar, para.getProcessBound());
-		stage.addActor(processBar);
+		controlTab.add(lab).expandX();
 
 		// 初始化绘图区域
+		gameTab = new Table();
+		setBound(gameTab, para.getGameBound());
+		stage.addActor(gameTab);
+
 		gameArea = new Image[para.getRows()][para.getCols()];
-		for (int i = 0; i < para.getRows(); i++) {
-			for (int j = 0; j < para.getCols(); j++) {
-				gameArea[i][j] = getImageByPos(i, j);
-				stage.addActor(gameArea[i][j]);
+		for (int j = para.getCols() - 1; j >= 0; j--) {
+			for (int i = 0; i < para.getRows(); i++) {
+				gameArea[i][j] = getImageNotPos(i, j);
+				gameTab.add(gameArea[i][j]).expand().fill().space(para.getNodeSpace());
 			}
+			gameTab.row();
 		}
 
 		// 添加按钮事件
@@ -241,7 +252,7 @@ public class FGameAct implements ApplicationListener {
 		// 将fgame置为全局
 		if (this.fgame != fgame) {
 			if (fgame == null) {
-				fgame = new FGame();
+				fgame = new FGame(para.getRows(), para.getCols());
 			}
 			this.fgame = fgame;
 		}
@@ -356,21 +367,16 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	/**
-	 * 根据x,y获取Image，并设置好位置和大小
+	 * 根据x,y获取Image(位置和大小改用table布局，不需要了)
 	 * 
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	private Image getImageByPos(int x, int y) {
+	private Image getImageNotPos(int x, int y) {
 		int index = fgame.getRcs()[x][y];
 		// 从text中生成一个Image对象
-		Image m = new Image(texts[index]);
-		float xx = para.getGameBound().getX() + x * para.getRectSize()[0];
-		float yy = para.getGameBound().getY() + y * para.getRectSize()[1];
-		m.setPosition(xx, yy);
-		m.setSize(para.getNodeSize()[0], para.getNodeSize()[1]);
-		return m;
+		return new Image(texts[index]);
 	}
 
 	/**
@@ -408,7 +414,8 @@ public class FGameAct implements ApplicationListener {
 			// 时间到，游戏结束
 			updateState(END);
 		}
-		float width = para.getProcessBound().getWidth() * process;
+		// controlTab的宽度即为进度条宽度
+		float width = para.getControlBound().getWidth() * process;
 		// Log.i("Width", width + " " + time + " " + process);
 		processBar.setWidth(width);
 		return process > 0;

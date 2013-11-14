@@ -22,8 +22,8 @@ public class FGame {
 	private int emptyCount = 10;
 	private int score = 0;
 
-	public FGame() {
-		this(10, 16, 5, 25);
+	public FGame(int rows, int cols) {
+		this(rows, cols, 5, (int) (rows * cols * 0.15));
 	}
 
 	public FGame(int rows, int cols, int colorCount, int emptyCount) {

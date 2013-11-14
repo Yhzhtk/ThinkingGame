@@ -20,14 +20,14 @@ public class FGameParameter {
 	private int screenWidth;
 	private int screenHeight;
 
-	private Rectangle btn1Bound;
-	private Rectangle btn2Bound;
-	private Rectangle labelBound;
-	private Rectangle processBound;
-
 	private Rectangle gameBound;
-	private int[] nodeSize;
-	private int[] rectSize;
+	private Rectangle controlBound;
+
+	private float[] rectSize;
+
+	private int nodeSpace;
+	private int buttonLeftSpace;
+	private int processBottomSpace;
 
 	private static FGameParameter para;
 
@@ -36,51 +36,56 @@ public class FGameParameter {
 
 	private FGameParameter() {
 	}
-	
+
 	/**
 	 * 根据游戏等级和屏幕信息获取布局
-	 * @param level
+	 * 
+	 * @param level 游戏级别
 	 * @param metric
 	 * @return
 	 */
-	public static FGameParameter getParaInstance(int level, DisplayMetrics metric){
+	public static FGameParameter getParaInstance(int level,
+			DisplayMetrics metric) {
 		// 根据游戏级别和屏幕信息计算行列
-		int rows = 10;
-		int cols = 16;
-		
+		int rows = 8;
+		int cols = 12;
+
 		return getParaInstance(rows, cols, metric);
 	}
 
 	/**
 	 * 根据指定的行列获取自适应的游戏布局
+	 * 
 	 * @param rows
 	 * @param cols
 	 * @param metric
 	 * @return
 	 */
-	public static FGameParameter getParaInstance(int rows, int cols,
+	private static FGameParameter getParaInstance(int rows, int cols,
 			DisplayMetrics metric) {
 		if (para == null || para.rows != rows || para.cols != cols
 				|| para.metric != metric) {
 			para = new FGameParameter();
-			
+
 			para.rows = rows;
 			para.cols = cols;
 			para.metric = metric;
-			
+
 			para.screenWidth = Gdx.graphics.getWidth();
 			para.screenHeight = Gdx.graphics.getHeight();
 
-			para.btn1Bound = new Rectangle(20, 20, 140, 60);
-			para.btn2Bound = new Rectangle(180, 20, 140, 60);
-			para.labelBound = new Rectangle(340, 20, 120, 60);
-			para.processBound = new Rectangle(25, 100, 420, 10);
+			para.controlBound = new Rectangle(25, 20, 420, 120);
 
 			para.gameBound = new Rectangle(25, 130, 420, 672);
-			para.nodeSize = new int[] { 40, 40 };
-			para.rectSize = new int[] { 43, 43 };
 
-			para.gameTime = 600000;
+			para.rectSize = new float[] { para.gameBound.getWidth() / para.rows,
+					para.gameBound.getHeight() / para.cols };
+
+			para.nodeSpace = 3;
+			para.buttonLeftSpace = 10;
+			para.processBottomSpace = 2;
+
+			para.gameTime =  (long)(para.rows * para.cols * 0.6) / 10 * 10000;
 		}
 		return para;
 	}
@@ -101,35 +106,31 @@ public class FGameParameter {
 		return screenHeight;
 	}
 
-	public Rectangle getBtn1Bound() {
-		return btn1Bound;
-	}
-
-	public Rectangle getBtn2Bound() {
-		return btn2Bound;
-	}
-
-	public Rectangle getLabelBound() {
-		return labelBound;
-	}
-
-	public Rectangle getProcessBound() {
-		return processBound;
-	}
-
 	public Rectangle getGameBound() {
 		return gameBound;
 	}
 
-	public int[] getNodeSize() {
-		return nodeSize;
-	}
-
-	public int[] getRectSize() {
-		return rectSize;
+	public Rectangle getControlBound() {
+		return controlBound;
 	}
 
 	public long getGameTime() {
 		return gameTime;
+	}
+
+	public int getNodeSpace() {
+		return nodeSpace;
+	}
+
+	public int getBtnLeftSpace() {
+		return buttonLeftSpace;
+	}
+
+	public int getProcessBottomSpace() {
+		return processBottomSpace;
+	}
+
+	public float[] getRectSize() {
+		return rectSize;
 	}
 }
