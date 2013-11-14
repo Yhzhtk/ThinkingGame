@@ -42,6 +42,7 @@ public class FGameAct implements ApplicationListener {
 	private static TextureRegionDrawable btnUpDraw;
 	private static TextureRegionDrawable btnDownDraw;
 	private static Texture backText;
+	private static Image processBar;
 
 	private static Music loopMusic;
 	private static Sound startSound;
@@ -50,6 +51,18 @@ public class FGameAct implements ApplicationListener {
 
 	// 游戏参数
 	public FGameParameter para;
+
+	// 游戏时间，如果正玩着表示开始时间，如果暂停的话表示已经玩的时间
+	private long playTime = 0;
+	private long lastTime = 0;
+	
+	// 游戏状态
+	public final static int NOTSTART = 0;
+	public final static int START = 1;
+	public final static int PAUSE = 2;
+	public final static int RESUME = 3;
+	public final static int END = 4;
+	public int playState = END;
 
 	// 绘图资源
 	private SpriteBatch batch;
@@ -82,7 +95,6 @@ public class FGameAct implements ApplicationListener {
 		loopMusic.setLooping(true);
 		loopMusic.setVolume(0.3f);
 		loopMusic.play();
-		
 
 		startSound = Gdx.audio.newSound(Gdx.files.internal("music/start.wav"));
 		scoreSound = Gdx.audio.newSound(Gdx.files.internal("music/score.wav"));
@@ -132,12 +144,17 @@ public class FGameAct implements ApplicationListener {
 		stage.addActor(btn1);
 
 		btn2 = new TextButton("Pause", btnStyle);
+		btn2.setDisabled(true);
 		setBound(btn2, para.getBtn2Bound());
 		stage.addActor(btn2);
 
 		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
 		setBound(lab, para.getLabelBound());
 		stage.addActor(lab);
+
+		processBar = new Image(new Texture(Gdx.files.internal("process.png")));
+		setBound(processBar, para.getProcessBound());
+		stage.addActor(processBar);
 
 		// 初始化绘图区域
 		gameArea = new Image[para.getRows()][para.getCols()];
@@ -153,16 +170,24 @@ public class FGameAct implements ApplicationListener {
 			@Override
 			public boolean handle(Event arg0) {
 				if (arg0.getTarget() == btn1) {
-					Log.d("Event", "Btn1 Click " + btn1.getText() + " Start");
-					if (btn1.getText().toString().equals("Start")) {
+					if (playState == END) {
+						playTime = 0;
 						startSound.play();
-						btn1.setText("End");
+						updateScore(0);
+						// 更新状态
+						updateState(START);
 						initGame(null);
 					} else {
-						btn1.setText("Start");
+						updateState(END);
 					}
+					Log.d("Event", "Btn1 Click");
 					return true;
 				} else if (arg0.getTarget() == btn2) {
+					if (playState == START) {
+						updateState(PAUSE);
+					} else {
+						updateState(RESUME);
+					}
 					Log.d("Event", "Btn2 Click");
 					return true;
 				}
@@ -243,6 +268,8 @@ public class FGameAct implements ApplicationListener {
 
 	@Override
 	public void pause() {
+		// 暂停置playTime为已玩时间
+		updateState(PAUSE);
 		Log.d("GdxEvent", "pause");
 	}
 
@@ -250,6 +277,13 @@ public class FGameAct implements ApplicationListener {
 	public void render() {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+		// Log.i("rend", playState + "");
+		// 每超过100ms，更新进度条
+		if (playState == START && System.currentTimeMillis() - lastTime > 500) {
+			lastTime = System.currentTimeMillis();
+			updateProcess(lastTime - playTime);
+		}
 
 		// 绘图
 		stage.draw();
@@ -262,8 +296,11 @@ public class FGameAct implements ApplicationListener {
 
 	@Override
 	public void resume() {
-
-		loopMusic.play();
+		if (playState == RESUME) {
+			return;
+		}
+		// 重置开始时间
+		updateState(RESUME);
 
 		// 当pause时EGL的资源被销毁，resume时需要加载
 		for (int i = 0; i < FGameUtil.getAllColors().length; i++) {
@@ -342,5 +379,70 @@ public class FGameAct implements ApplicationListener {
 	 */
 	private void updateScore(int score) {
 		lab.setText("Come on!\n\nScore: " + score);
+	}
+
+	/**
+	 * 设置进度条，返回当前是否结束
+	 * 
+	 * @param time
+	 * @return
+	 */
+	private boolean updateProcess(long time) {
+		float process = (float) ((double) time / para.getGameTime());
+		process = 1 - process;
+		if (process < 0) {
+			process = 0;
+			// 时间到，游戏结束
+			updateState(END);
+		}
+		float width = para.getProcessBound().getWidth() * process;
+		Log.i("Width", width + " " + time + " " + process);
+		processBar.setWidth(width);
+		return process > 0;
+	}
+
+	/**
+	 * 更新状态
+	 * 
+	 * @param state
+	 */
+	private void updateState(int state) {
+		Log.i("UpdateState", state + "");
+		switch (state) {
+		case NOTSTART:
+			playState = NOTSTART;
+			break;
+		case START:
+			playState = START;
+			if(playTime <= para.getGameTime()){
+				playTime = System.currentTimeMillis() - playTime;
+			}
+			btn1.setText("End");
+			btn2.setText("Pause");
+			btn2.setDisabled(false);
+			loopMusic.play();
+			break;
+		case PAUSE:
+			playState = PAUSE;
+			if(playTime > para.getGameTime()){
+				playTime = System.currentTimeMillis() - playTime;
+			}
+			btn2.setText("Resume");
+			// loopMusic.pause();
+			break;
+		case RESUME:
+			Log.i("State", "Resume");
+			// 重新开始就是start
+			playState = START;
+			playTime = System.currentTimeMillis() - playTime;
+			btn2.setText("Pause");
+			loopMusic.play();
+			break;
+		case END:
+			playState = END;
+			btn1.setText("Start");
+			btn2.setDisabled(true);
+			break;
+		}
 	}
 }

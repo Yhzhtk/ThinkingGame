@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
-import com.think.game.f.FGame;
 
 public class MainActivity extends AndroidApplication {
 
@@ -38,17 +37,6 @@ public class MainActivity extends AndroidApplication {
 		case R.id.action_exit:
 			finish();
 			System.exit(0);
-		case R.id.action_start_end:
-			boolean isStart = item.getTitle().equals(
-					getString(R.string.action_start));
-			if (isStart) {
-				// 点击为开始
-				fAct.initGame(new FGame());
-				item.setTitle(getString(R.string.action_end));
-			} else {
-				// 点击为结束
-				item.setTitle(getString(R.string.action_start));
-			}
 			break;
 		default:
 			return super.onOptionsItemSelected(item);

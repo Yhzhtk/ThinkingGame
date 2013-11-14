@@ -20,12 +20,16 @@ public class FGameParameter {
 	private Rectangle btn1Bound;
 	private Rectangle btn2Bound;
 	private Rectangle labelBound;
-
+	private Rectangle processBound;
+	
 	private Rectangle gameBound;
 	private int[] nodeSize;
 	private int[] rectSize;
 
 	private static FGameParameter para;
+	
+	// 游戏时间
+	private long gameTime;
 
 	private FGameParameter() {
 	}
@@ -40,13 +44,16 @@ public class FGameParameter {
 			para.screenWidth = Gdx.graphics.getWidth();
 			para.screenHeight = Gdx.graphics.getHeight();
 
-			para.btn1Bound = new Rectangle(20, 20, 140, 80);
-			para.btn2Bound = new Rectangle(180, 20, 140, 80);
-			para.labelBound = new Rectangle(340, 20, 120, 80);
+			para.btn1Bound = new Rectangle(20, 20, 140, 60);
+			para.btn2Bound = new Rectangle(180, 20, 140, 60);
+			para.labelBound = new Rectangle(340, 20, 120, 60);
+			para.processBound = new Rectangle(25, 100, 420, 10);
 
 			para.gameBound = new Rectangle(25, 130, 420, 672);
 			para.nodeSize = new int[] { 40, 40 };
 			para.rectSize = new int[] { 43, 43 };
+			
+			para.gameTime = 30000;
 		}
 		return para;
 	}
@@ -78,6 +85,10 @@ public class FGameParameter {
 	public Rectangle getLabelBound() {
 		return labelBound;
 	}
+	
+	public Rectangle getProcessBound() {
+		return processBound;
+	}
 
 	public Rectangle getGameBound() {
 		return gameBound;
@@ -89,5 +100,9 @@ public class FGameParameter {
 	
 	public int[] getRectSize() {
 		return rectSize;
+	}
+
+	public long getGameTime() {
+		return gameTime;
 	}
 }

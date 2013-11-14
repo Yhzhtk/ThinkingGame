@@ -45,6 +45,10 @@ public class FGameInputProcessor implements InputProcessor {
 	 * @return
 	 */
 	public boolean actEventTouchUp(int arg0, int arg1, int arg2, int arg3) {
+		// 游戏未开始不响应
+		if(fGame.playState != FGameAct.START){
+			return false;
+		}
 		// y轴转换
 		arg1 = height - arg1;
 		Log.d("Event", "转换后的坐标:" + arg0 + " " + arg1);
