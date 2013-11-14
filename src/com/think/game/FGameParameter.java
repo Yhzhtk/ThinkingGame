@@ -27,10 +27,12 @@ public class FGameParameter {
 
 	private int btnHeight;
 	private int processHeight;
-	
+
 	private int nodeSpace;
 	private int buttonLeftSpace;
 	private int processBottomSpace;
+
+	private int[] centerGameBound;
 
 	private static FGameParameter para;
 
@@ -43,7 +45,8 @@ public class FGameParameter {
 	/**
 	 * 根据游戏等级和屏幕信息获取布局
 	 * 
-	 * @param level 游戏级别
+	 * @param level
+	 *            游戏级别
 	 * @param metric
 	 * @return
 	 */
@@ -78,38 +81,51 @@ public class FGameParameter {
 			para.screenHeight = Gdx.graphics.getHeight();
 
 			int space = (int) (para.screenWidth * 0.08);
-			
+
 			int s_width = para.screenWidth - (2 * space);
 			int s_height = para.screenHeight - (2 * space);
-			
+
 			int control_x = space;
 			int control_y = space;
 			int control_width = s_width;
 			int control_height = (int) (s_height * 0.15);
-			
+
 			int game_x = space;
-			int game_y = space + (int) ( s_height * 0.17);
+			int game_y = space + (int) (s_height * 0.17);
 			int game_width = s_width;
-			int game_height = (int) ( s_height * 0.83);
+			int game_height = (int) (s_height * 0.83);
 
-//			para.controlBound = new Rectangle(25, 20, 420, 120);
-//			para.gameBound = new Rectangle(25, 130, 420, 672);
-			para.controlBound = new Rectangle(control_x, control_y, control_width, control_height);
-			para.gameBound = new Rectangle(game_x, game_y, game_width, game_height);
+			// para.controlBound = new Rectangle(25, 20, 420, 120);
+			// para.gameBound = new Rectangle(25, 130, 420, 672);
+			para.controlBound = new Rectangle(control_x, control_y,
+					control_width, control_height);
+			para.gameBound = new Rectangle(game_x, game_y, game_width,
+					game_height);
 
-			para.rectSize = new float[] { para.gameBound.getWidth() / para.rows,
+			para.rectSize = new float[] {
+					para.gameBound.getWidth() / para.rows,
 					para.gameBound.getHeight() / para.cols };
-			
+
 			para.btnHeight = (int) (control_height * 0.7);
 			para.processHeight = (int) (control_height * 0.15);
-			
+
 			para.nodeSpace = (int) (para.rectSize[0] * 0.06);
 			para.buttonLeftSpace = (int) (s_width * 0.02);
 			para.processBottomSpace = (int) (control_height * 0.1);
 
-			para.gameTime =  (long)(para.rows * para.cols * 0.6) / 10 * 10000;
+			para.centerGameBound = new int[] {
+					(int) (para.getGameBound().getX() + para.getGameBound()
+							.getWidth() / 2),
+					(int) (para.getGameBound().getY() + para.getGameBound()
+							.getHeight() / 2) };
+
+			para.gameTime = (long) (para.rows * para.cols * 0.6) / 10 * 10000;
 		}
 		return para;
+	}
+
+	public int[] getCenterGameBound() {
+		return centerGameBound;
 	}
 
 	public int getRows() {

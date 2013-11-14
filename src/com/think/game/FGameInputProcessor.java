@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 
 /**
  * FGame事件处理
+ * 
  * @author gudh
  * @date 2013-11-12
  */
@@ -46,7 +47,12 @@ public class FGameInputProcessor implements InputProcessor {
 	 */
 	public boolean actEventTouchUp(int arg0, int arg1, int arg2, int arg3) {
 		// 游戏未开始不响应
-		if(fGame.playState != FGameAct.START){
+		if (fGame.playState != FGameAct.START) {
+			if (fGame.playState == FGameAct.PAUSE) {
+				fGame.showMsg("Please Resume First", 1000);
+			} else {
+				fGame.showMsg("Please Start First", 1000);
+			}
 			return false;
 		}
 		// y轴转换

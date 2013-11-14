@@ -81,10 +81,15 @@ public class FGameAct implements ApplicationListener {
 	private FGame fgame;
 
 	// 控件
-	Label lab; // 得分标签
-	TextButton btn1; // 按钮1
-	TextButton btn2; // 按钮2
+	private Label lab; // 得分标签
+	private TextButton btn1; // 按钮1
+	private TextButton btn2; // 按钮2
 	private Image[][] gameArea; // 存储每个区块
+	
+	private boolean msgShow; // 消息是否正在显示
+	private Label msgLab; // 消息Label
+	private long msgShowTime; // 需要显示的时间
+	private long msgStartTime; // 消息开始显示时间
 
 	// 标志是否第一次加载
 	private boolean isInit = false;
@@ -167,6 +172,8 @@ public class FGameAct implements ApplicationListener {
 		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
 		controlTab.add(lab).height(para.getBtnHeight()).bottom().expandX().center();
 
+		msgLab = new Label("Ready!", new LabelStyle(font, Color.RED));
+		
 		// 初始化绘图区域
 		gameTab = new Table();
 		setBound(gameTab, para.getGameBound());
@@ -309,6 +316,10 @@ public class FGameAct implements ApplicationListener {
 			updateProcess(lastTime - playTime);
 		}
 
+		if(msgShow && System.currentTimeMillis() - msgStartTime >  msgShowTime){
+			hideMsg();
+		}
+		
 		// 绘图
 		stage.draw();
 	}
@@ -431,6 +442,7 @@ public class FGameAct implements ApplicationListener {
 		switch (state) {
 		case NOTSTART:
 			playState = NOTSTART;
+			showMsg("Game NOTSTART", 1000);
 			break;
 		case START:
 			playState = START;
@@ -441,6 +453,7 @@ public class FGameAct implements ApplicationListener {
 			btn2.setText("Pause");
 			btn2.setDisabled(false);
 			loopMusic.play();
+			showMsg("Game Start", 1000);
 			break;
 		case PAUSE:
 			playState = PAUSE;
@@ -448,6 +461,7 @@ public class FGameAct implements ApplicationListener {
 				playTime = System.currentTimeMillis() - playTime;
 			}
 			btn2.setText("Resume");
+			showMsg("Pause Game", 1000);
 			// loopMusic.pause();
 			break;
 		case RESUME:
@@ -457,12 +471,39 @@ public class FGameAct implements ApplicationListener {
 			playTime = System.currentTimeMillis() - playTime;
 			btn2.setText("Pause");
 			loopMusic.play();
+			showMsg("Resume Game", 1000);
 			break;
 		case END:
 			playState = END;
 			btn1.setText("Start");
 			btn2.setDisabled(true);
+			showMsg("Game End\nYour score is " + fgame.getScore(), 3000);
 			break;
 		}
+	}
+	
+	/**
+	 * 显示消息
+	 * @param msg
+	 * @param time
+	 */
+	public void showMsg(String msg, long time){
+		msgLab.setText(msg);
+		int[] centerGame = para.getCenterGameBound();
+		float x = centerGame[0] - msgLab.getWidth() / 2;
+		float y = centerGame[1] - msgLab.getWidth() / 2;
+		msgLab.setPosition(x, y);
+		msgStartTime = System.currentTimeMillis();
+		msgShow = true;
+		msgShowTime = time;
+		stage.addActor(msgLab);
+	}
+	
+	/**
+	 * 隐藏消息
+	 */
+	private void hideMsg(){
+		msgShow = false;
+		msgLab.remove();
 	}
 }
