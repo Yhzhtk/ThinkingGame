@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
+
 import com.badlogic.gdx.graphics.Color;
 
 /**
@@ -15,16 +17,15 @@ import com.badlogic.gdx.graphics.Color;
  */
 public class FGameUtil {
 
-	final static Color colors[] = { Color.CLEAR, Color.RED,
-			Color.YELLOW, Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN,
-			Color.PINK };
+	final static Color colors[] = { Color.CLEAR, Color.RED, Color.YELLOW,
+			Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.PINK };
 
 	private final static Random random = new Random();
 
-	public static Color[] getAllColors(){
+	public static Color[] getAllColors() {
 		return colors;
 	}
-	
+
 	/**
 	 * 获取下一个随机颜色下标，不包括0
 	 * 
@@ -85,5 +86,73 @@ public class FGameUtil {
 		}
 
 		return sets;
+	}
+
+	/**
+	 * 判断是否有可以消除的小方块,true没有,false有
+	 * 
+	 * @param rcs
+	 * @return
+	 */
+	@SuppressLint("UseSparseArrays")
+	public static boolean checkGameOver(int[][] rcs) {
+		int rows = rcs.length;
+		int cols = rcs[0].length;
+		HashSet<Integer> exitHash = new HashSet<Integer>(3);
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (rcs[i][j] == 0) {
+					int tx = j;
+					int ty = i;
+					// 左边的节点
+					do {
+						--tx;
+					} while (tx > 0 && rcs[ty][tx] == 0);
+					if (tx >= 0 && rcs[ty][tx] != 0) {
+						exitHash.add(rcs[ty][tx]);
+					}
+
+					// 右边的节点
+					tx = j;
+					ty = i;
+					do {
+						++tx;
+					} while (tx < cols - 1 && rcs[ty][tx] == 0);
+					if (tx < cols && rcs[ty][tx] != 0) {
+						if (exitHash.contains(rcs[ty][tx])) {
+							return false;
+						} else {
+							exitHash.add(rcs[ty][tx]);
+						}
+					}
+					// 上边的节点
+					tx = j;
+					ty = i;
+					do {
+						--ty;
+					} while (ty > 0 && rcs[ty][tx] == 0);
+					if (ty >= 0 && rcs[ty][tx] != 0) {
+						if (exitHash.contains(rcs[ty][tx])) {
+							return false;
+						} else {
+							exitHash.add(rcs[ty][tx]);
+						}
+					}
+					// 下边的节点
+					tx = j;
+					ty = i;
+					do {
+						++ty;
+					} while (ty < rows - 1 && rcs[ty][tx] == 0);
+					if (ty < rows && rcs[ty][tx] != 0) {
+						if (exitHash.contains(rcs[ty][tx])) {
+							return false;
+						}
+					}
+					exitHash.clear();
+				}
+			}
+		}
+		return true;
 	}
 }

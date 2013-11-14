@@ -53,7 +53,7 @@ public class FGameParameter {
 			para.nodeSize = new int[] { 40, 40 };
 			para.rectSize = new int[] { 43, 43 };
 			
-			para.gameTime = 30000;
+			para.gameTime = 600000;
 		}
 		return para;
 	}

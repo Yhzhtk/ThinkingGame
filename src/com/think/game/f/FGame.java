@@ -118,7 +118,7 @@ public class FGame {
 		do {
 			tx--;
 		} while (tx > 0 && rcs[tx][ty] == 0);
-		if (tx >= 0) {
+		if (tx >= 0 && rcs[tx][ty] != 0) {
 			nodes.add(new int[] { tx, ty });
 		}
 
@@ -128,7 +128,7 @@ public class FGame {
 		do {
 			tx++;
 		} while (tx < rows - 1 && rcs[tx][ty] == 0);
-		if (tx < rows) {
+		if (tx < rows && rcs[tx][ty] != 0) {
 			nodes.add(new int[] { tx, ty });
 		}
 
@@ -138,7 +138,7 @@ public class FGame {
 		do {
 			ty--;
 		} while (ty > 0 && rcs[tx][ty] == 0);
-		if (ty >= 0) {
+		if (ty >= 0 && rcs[tx][ty] != 0) {
 			nodes.add(new int[] { tx, ty });
 		}
 
@@ -148,7 +148,7 @@ public class FGame {
 		do {
 			ty++;
 		} while (ty < cols - 1 && rcs[tx][ty] == 0);
-		if (ty < cols) {
+		if (ty < cols && rcs[tx][ty] != 0) {
 			nodes.add(new int[] { tx, ty });
 		}
 

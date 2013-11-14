@@ -55,7 +55,7 @@ public class FGameAct implements ApplicationListener {
 	// 游戏时间，如果正玩着表示开始时间，如果暂停的话表示已经玩的时间
 	private long playTime = 0;
 	private long lastTime = 0;
-	
+
 	// 游戏状态
 	public final static int NOTSTART = 0;
 	public final static int START = 1;
@@ -209,6 +209,14 @@ public class FGameAct implements ApplicationListener {
 			// 重绘界面
 			repaint();
 			scoreSound.play();
+
+			// 判断是否结束
+			if (FGameUtil.checkGameOver(fgame.getRcs())) {
+				Log.i("IsEnd", "check ok");
+				updateState(END);
+			} else {
+				Log.i("IsEnd", "check false");
+			}
 		} else {
 			errorSound.play();
 		}
@@ -396,7 +404,7 @@ public class FGameAct implements ApplicationListener {
 			updateState(END);
 		}
 		float width = para.getProcessBound().getWidth() * process;
-		Log.i("Width", width + " " + time + " " + process);
+		// Log.i("Width", width + " " + time + " " + process);
 		processBar.setWidth(width);
 		return process > 0;
 	}
@@ -414,7 +422,7 @@ public class FGameAct implements ApplicationListener {
 			break;
 		case START:
 			playState = START;
-			if(playTime <= para.getGameTime()){
+			if (playTime <= para.getGameTime()) {
 				playTime = System.currentTimeMillis() - playTime;
 			}
 			btn1.setText("End");
@@ -424,7 +432,7 @@ public class FGameAct implements ApplicationListener {
 			break;
 		case PAUSE:
 			playState = PAUSE;
-			if(playTime > para.getGameTime()){
+			if (playTime > para.getGameTime()) {
 				playTime = System.currentTimeMillis() - playTime;
 			}
 			btn2.setText("Resume");
