@@ -25,6 +25,9 @@ public class FGameParameter {
 
 	private float[] rectSize;
 
+	private int btnHeight;
+	private int processHeight;
+	
 	private int nodeSpace;
 	private int buttonLeftSpace;
 	private int processBottomSpace;
@@ -74,16 +77,35 @@ public class FGameParameter {
 			para.screenWidth = Gdx.graphics.getWidth();
 			para.screenHeight = Gdx.graphics.getHeight();
 
-			para.controlBound = new Rectangle(25, 20, 420, 120);
+			int space = (int) (para.screenWidth * 0.08);
+			
+			int s_width = para.screenWidth - (2 * space);
+			int s_height = para.screenHeight - (2 * space);
+			
+			int control_x = space;
+			int control_y = space;
+			int control_width = s_width;
+			int control_height = (int) (s_height * 0.15);
+			
+			int game_x = space;
+			int game_y = space + (int) ( s_height * 0.17);
+			int game_width = s_width;
+			int game_height = (int) ( s_height * 0.83);
 
-			para.gameBound = new Rectangle(25, 130, 420, 672);
+//			para.controlBound = new Rectangle(25, 20, 420, 120);
+//			para.gameBound = new Rectangle(25, 130, 420, 672);
+			para.controlBound = new Rectangle(control_x, control_y, control_width, control_height);
+			para.gameBound = new Rectangle(game_x, game_y, game_width, game_height);
 
 			para.rectSize = new float[] { para.gameBound.getWidth() / para.rows,
 					para.gameBound.getHeight() / para.cols };
-
-			para.nodeSpace = 3;
-			para.buttonLeftSpace = 10;
-			para.processBottomSpace = 2;
+			
+			para.btnHeight = (int) (control_height * 0.7);
+			para.processHeight = (int) (control_height * 0.15);
+			
+			para.nodeSpace = (int) (para.rectSize[0] * 0.06);
+			para.buttonLeftSpace = (int) (s_width * 0.02);
+			para.processBottomSpace = (int) (control_height * 0.1);
 
 			para.gameTime =  (long)(para.rows * para.cols * 0.6) / 10 * 10000;
 		}
@@ -132,5 +154,13 @@ public class FGameParameter {
 
 	public float[] getRectSize() {
 		return rectSize;
+	}
+
+	public int getBtnHeight() {
+		return btnHeight;
+	}
+
+	public int getProcessHeight() {
+		return processHeight;
 	}
 }

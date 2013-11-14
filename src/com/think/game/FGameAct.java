@@ -150,7 +150,7 @@ public class FGameAct implements ApplicationListener {
 		stage.addActor(controlTab);
 
 		processBar = new Image(new Texture(Gdx.files.internal("process.png")));
-		controlTab.add(processBar).colspan(3).expandX().fillX().spaceBottom(para.getProcessBottomSpace());
+		controlTab.add(processBar).colspan(3).height(para.getProcessHeight()).expandX().fillX().spaceBottom(para.getProcessBottomSpace());
 
 		controlTab.row();
 
@@ -158,14 +158,14 @@ public class FGameAct implements ApplicationListener {
 				btnUpDraw, btnDownDraw, btnDownDraw, font);
 
 		btn1 = new TextButton("Start", btnStyle);
-		controlTab.add(btn1).expandX().spaceLeft(para.getBtnLeftSpace()).fillX();
+		controlTab.add(btn1).expandX().height(para.getBtnHeight()).bottom().spaceLeft(para.getBtnLeftSpace()).fillX();
 
 		btn2 = new TextButton("Pause", btnStyle);
 		btn2.setDisabled(true);
-		controlTab.add(btn2).expandX().spaceLeft(para.getBtnLeftSpace()).fillX();
+		controlTab.add(btn2).expandX().height(para.getBtnHeight()).bottom().spaceLeft(para.getBtnLeftSpace()).fillX();
 
 		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
-		controlTab.add(lab).expandX();
+		controlTab.add(lab).height(para.getBtnHeight()).bottom().expandX().center();
 
 		// 初始化绘图区域
 		gameTab = new Table();
