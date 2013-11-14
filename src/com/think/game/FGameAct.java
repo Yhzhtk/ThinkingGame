@@ -2,6 +2,7 @@ package com.think.game;
 
 import java.lang.reflect.Method;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -35,6 +36,9 @@ import com.think.game.f.FGameUtil;
  */
 public class FGameAct implements ApplicationListener {
 
+	// 标志系统像素等
+	private DisplayMetrics metric;
+	
 	// 存储所有颜色对象
 	private static String[] imgPaths;
 	private static Texture[] texts;
@@ -82,7 +86,8 @@ public class FGameAct implements ApplicationListener {
 	// 标志是否第一次加载
 	private boolean isInit = false;
 
-	public FGameAct() {
+	public FGameAct(DisplayMetrics metric) {
+		this.metric = metric;
 		// 初始化游戏实例
 		fgame = new FGame();
 	}
@@ -125,7 +130,7 @@ public class FGameAct implements ApplicationListener {
 		backText = new Texture(Gdx.files.internal("back.png"));
 
 		// 加载参数
-		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols());
+		para = FGameParameter.getParaInstance(fgame.getRows(), fgame.getCols(), metric);
 
 		batch = new SpriteBatch();
 		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,

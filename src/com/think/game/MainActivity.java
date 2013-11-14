@@ -1,6 +1,7 @@
 package com.think.game;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +17,15 @@ public class MainActivity extends AndroidApplication {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		fAct = new FGameAct();
+		
+		DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+//        int width = metric.widthPixels;  // 屏幕宽度（像素）
+//        int height = metric.heightPixels;  // 屏幕高度（像素）
+//        float density = metric.density;  // 屏幕密度（0.75 / 1.0 / 1.5）
+//        int densityDpi = metric.densityDpi;  // 屏幕密度DPI（120 / 160 / 240）
+        
+        fAct = new FGameAct(metric);
 		// 初始化游戏
 		initialize(fAct, false);
 	}
