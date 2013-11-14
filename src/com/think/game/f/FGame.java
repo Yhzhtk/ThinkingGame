@@ -23,7 +23,7 @@ public class FGame {
 	private int score = 0;
 
 	public FGame(int rows, int cols) {
-		this(rows, cols, 5, (int) (rows * cols * 0.15));
+		this(rows, cols, 6, (int) (rows * cols * 0.15));
 	}
 
 	public FGame(int rows, int cols, int colorCount, int emptyCount) {

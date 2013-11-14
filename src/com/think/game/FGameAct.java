@@ -10,7 +10,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -55,6 +54,8 @@ public class FGameAct implements ApplicationListener {
 	private static Sound startSound;
 	private static Sound scoreSound;
 	private static Sound errorSound;
+	private static Sound overSound;
+	private static Sound cationSound;
 
 	// 游戏参数
 	public FGameParameter para;
@@ -104,7 +105,7 @@ public class FGameAct implements ApplicationListener {
 	 * 初始化资源信息，只需一次，在第一次加载时
 	 */
 	private void initProperties() {
-		loopMusic = Gdx.audio.newMusic(Gdx.files.internal("music/ten.mp3"));
+		loopMusic = Gdx.audio.newMusic(Gdx.files.internal("music/back.mp3"));
 		loopMusic.setLooping(true);
 		loopMusic.setVolume(0.3f);
 		loopMusic.play();
@@ -112,6 +113,8 @@ public class FGameAct implements ApplicationListener {
 		startSound = Gdx.audio.newSound(Gdx.files.internal("music/start.wav"));
 		scoreSound = Gdx.audio.newSound(Gdx.files.internal("music/score.wav"));
 		errorSound = Gdx.audio.newSound(Gdx.files.internal("music/error.wav"));
+		cationSound = Gdx.audio.newSound(Gdx.files.internal("music/cation.wav"));
+		overSound = Gdx.audio.newSound(Gdx.files.internal("music/over.wav"));
 
 		// 初始化颜色
 		int length = FGameUtil.getAllColors().length;
@@ -162,17 +165,17 @@ public class FGameAct implements ApplicationListener {
 		TextButton.TextButtonStyle btnStyle = new TextButton.TextButtonStyle(
 				btnUpDraw, btnDownDraw, btnDownDraw, font);
 
-		btn1 = new TextButton("Start", btnStyle);
+		btn1 = new TextButton("开始", btnStyle);
 		controlTab.add(btn1).expandX().height(para.getBtnHeight()).bottom().spaceLeft(para.getBtnLeftSpace()).fillX();
 
-		btn2 = new TextButton("Pause", btnStyle);
+		btn2 = new TextButton("暂停", btnStyle);
 		btn2.setDisabled(true);
 		controlTab.add(btn2).expandX().height(para.getBtnHeight()).bottom().spaceLeft(para.getBtnLeftSpace()).fillX();
 
-		lab = new Label("Come on!\n\nScore： 0", new LabelStyle(font, Color.RED));
+		lab = new Label("得分: 0", new LabelStyle(font, null));
 		controlTab.add(lab).height(para.getBtnHeight()).bottom().expandX().center();
 
-		msgLab = new Label("Ready!", new LabelStyle(font, Color.RED));
+		msgLab = new Label("Ready!", new LabelStyle(font, null));
 		
 		// 初始化绘图区域
 		gameTab = new Table();
@@ -240,8 +243,10 @@ public class FGameAct implements ApplicationListener {
 			} else {
 				Log.i("IsEnd", "check false");
 			}
-		} else {
+		} else if(res == 1){
 			errorSound.play();
+		} else{
+			cationSound.play();
 		}
 		if (res > 0) {
 			// 更新游戏得分
@@ -408,7 +413,7 @@ public class FGameAct implements ApplicationListener {
 	 * @param score
 	 */
 	private void updateScore(int score) {
-		lab.setText("Come on!\n\nScore: " + score);
+		lab.setText("得分: " + score);
 	}
 
 	/**
@@ -423,6 +428,7 @@ public class FGameAct implements ApplicationListener {
 		if (process < 0) {
 			process = 0;
 			// 时间到，游戏结束
+			showMsg("对不起时间到了", 1000);
 			updateState(END);
 		}
 		// controlTab的宽度即为进度条宽度
@@ -449,19 +455,19 @@ public class FGameAct implements ApplicationListener {
 			if (playTime <= para.getGameTime()) {
 				playTime = System.currentTimeMillis() - playTime;
 			}
-			btn1.setText("End");
-			btn2.setText("Pause");
+			btn1.setText("结束");
+			btn2.setText("暂停");
 			btn2.setDisabled(false);
 			loopMusic.play();
-			showMsg("Game Start", 1000);
+			showMsg("开始游戏", 1000);
 			break;
 		case PAUSE:
 			playState = PAUSE;
 			if (playTime > para.getGameTime()) {
 				playTime = System.currentTimeMillis() - playTime;
 			}
-			btn2.setText("Resume");
-			showMsg("Pause Game", 1000);
+			btn2.setText("继续");
+			showMsg("游戏暂停", 1000);
 			// loopMusic.pause();
 			break;
 		case RESUME:
@@ -469,15 +475,16 @@ public class FGameAct implements ApplicationListener {
 			// 重新开始就是start
 			playState = START;
 			playTime = System.currentTimeMillis() - playTime;
-			btn2.setText("Pause");
+			btn2.setText("暂停");
 			loopMusic.play();
-			showMsg("Resume Game", 1000);
+			showMsg("游戏继续", 1000);
 			break;
 		case END:
 			playState = END;
-			btn1.setText("Start");
+			btn1.setText("开始");
 			btn2.setDisabled(true);
-			showMsg("Game End\nYour score is " + fgame.getScore(), 3000);
+			overSound.play();
+			showMsg("游戏结束 恭喜\n你的得分" + fgame.getScore(), 3000);
 			break;
 		}
 	}
@@ -490,8 +497,8 @@ public class FGameAct implements ApplicationListener {
 	public void showMsg(String msg, long time){
 		msgLab.setText(msg);
 		int[] centerGame = para.getCenterGameBound();
-		float x = centerGame[0] - msgLab.getWidth() / 2;
-		float y = centerGame[1] - msgLab.getWidth() / 2;
+		float x = centerGame[0] - msgLab.getTextBounds().width / 2;
+		float y = centerGame[1] - msgLab.getTextBounds().height / 2;
 		msgLab.setPosition(x, y);
 		msgStartTime = System.currentTimeMillis();
 		msgShow = true;
