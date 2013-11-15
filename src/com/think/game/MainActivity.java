@@ -18,6 +18,8 @@ public class MainActivity extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		DataUtil.initDataUtil(this);
+		
 		DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
 //        int width = metric.widthPixels;  // 屏幕宽度（像素）

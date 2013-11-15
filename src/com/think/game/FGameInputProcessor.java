@@ -49,9 +49,9 @@ public class FGameInputProcessor implements InputProcessor {
 		// 游戏未开始不响应
 		if (fGame.playState != FGameAct.START) {
 			if (fGame.playState == FGameAct.PAUSE) {
-				fGame.showMsg("游戏暂停中\n请先点继续", 1000);
+				fGame.showMsg("游戏暂停中\n请先点继续", 0);
 			} else {
-				fGame.showMsg("游戏尚未开始\n请先开始游戏", 1000);
+				fGame.showMsg("游戏尚未开始\n请先开始游戏", 0);
 			}
 			return false;
 		}

@@ -45,6 +45,7 @@ public class FGameAct implements ApplicationListener {
 	private static Image[] rects;
 	private static TextureRegionDrawable btnUpDraw;
 	private static TextureRegionDrawable btnDownDraw;
+	private static TextureRegionDrawable msgDraw;
 	private static Texture backText;
 	private static Image processBar;
 	private static Table gameTab;
@@ -86,9 +87,9 @@ public class FGameAct implements ApplicationListener {
 	private TextButton btn1; // 按钮1
 	private TextButton btn2; // 按钮2
 	private Image[][] gameArea; // 存储每个区块
-	
+
 	private boolean msgShow; // 消息是否正在显示
-	private Label msgLab; // 消息Label
+	private TextButton msgBox; // 消息Label
 	private long msgShowTime; // 需要显示的时间
 	private long msgStartTime; // 消息开始显示时间
 
@@ -113,7 +114,8 @@ public class FGameAct implements ApplicationListener {
 		startSound = Gdx.audio.newSound(Gdx.files.internal("music/start.wav"));
 		scoreSound = Gdx.audio.newSound(Gdx.files.internal("music/score.wav"));
 		errorSound = Gdx.audio.newSound(Gdx.files.internal("music/error.wav"));
-		cationSound = Gdx.audio.newSound(Gdx.files.internal("music/cation.wav"));
+		cationSound = Gdx.audio
+				.newSound(Gdx.files.internal("music/cation.wav"));
 		overSound = Gdx.audio.newSound(Gdx.files.internal("music/over.wav"));
 
 		// 初始化颜色
@@ -139,6 +141,8 @@ public class FGameAct implements ApplicationListener {
 		btnDownDraw = new TextureRegionDrawable(new TextureRegion(new Texture(
 				Gdx.files.internal("btnDown.png"))));
 		backText = new Texture(Gdx.files.internal("back.png"));
+		msgDraw = new TextureRegionDrawable(new TextureRegion(new Texture(
+				Gdx.files.internal("msg.png"))));
 
 		// 加载参数
 		para = FGameParameter.getParaInstance(1, metric);
@@ -158,7 +162,8 @@ public class FGameAct implements ApplicationListener {
 		stage.addActor(controlTab);
 
 		processBar = new Image(new Texture(Gdx.files.internal("process.png")));
-		controlTab.add(processBar).colspan(3).height(para.getProcessHeight()).expandX().fillX().spaceBottom(para.getProcessBottomSpace());
+		controlTab.add(processBar).colspan(3).height(para.getProcessHeight())
+				.expandX().fillX().spaceBottom(para.getProcessBottomSpace());
 
 		controlTab.row();
 
@@ -166,17 +171,22 @@ public class FGameAct implements ApplicationListener {
 				btnUpDraw, btnDownDraw, btnDownDraw, font);
 
 		btn1 = new TextButton("开始", btnStyle);
-		controlTab.add(btn1).expandX().height(para.getBtnHeight()).bottom().spaceLeft(para.getBtnLeftSpace()).fillX();
+		controlTab.add(btn1).expandX().height(para.getBtnHeight()).bottom()
+				.spaceLeft(para.getBtnLeftSpace()).fillX();
 
 		btn2 = new TextButton("暂停", btnStyle);
 		btn2.setDisabled(true);
-		controlTab.add(btn2).expandX().height(para.getBtnHeight()).bottom().spaceLeft(para.getBtnLeftSpace()).fillX();
+		controlTab.add(btn2).expandX().height(para.getBtnHeight()).bottom()
+				.spaceLeft(para.getBtnLeftSpace()).fillX();
 
 		lab = new Label("得分: 0", new LabelStyle(font, null));
-		controlTab.add(lab).height(para.getBtnHeight()).bottom().expandX().center();
+		controlTab.add(lab).height(para.getBtnHeight()).bottom().expandX()
+				.center();
 
-		msgLab = new Label("Ready!", new LabelStyle(font, null));
-		
+		TextButton.TextButtonStyle msgStyle = new TextButton.TextButtonStyle(
+				msgDraw, msgDraw, msgDraw, font);
+		msgBox = new TextButton("Ready!", msgStyle);
+
 		// 初始化绘图区域
 		gameTab = new Table();
 		setBound(gameTab, para.getGameBound());
@@ -186,7 +196,8 @@ public class FGameAct implements ApplicationListener {
 		for (int j = para.getCols() - 1; j >= 0; j--) {
 			for (int i = 0; i < para.getRows(); i++) {
 				gameArea[i][j] = getImageNotPos(i, j);
-				gameTab.add(gameArea[i][j]).expand().fill().space(para.getNodeSpace());
+				gameTab.add(gameArea[i][j]).expand().fill()
+						.space(para.getNodeSpace());
 			}
 			gameTab.row();
 		}
@@ -216,6 +227,10 @@ public class FGameAct implements ApplicationListener {
 					}
 					Log.d("Event", "Btn2 Click");
 					return true;
+				} else if (arg0.getTarget() == msgBox) {
+					if (System.currentTimeMillis() - msgStartTime > msgShowTime) {
+						hideMsg();
+					}
 				}
 				return false;
 			}
@@ -243,9 +258,9 @@ public class FGameAct implements ApplicationListener {
 			} else {
 				Log.i("IsEnd", "check false");
 			}
-		} else if(res == 1){
+		} else if (res == 1) {
 			errorSound.play();
-		} else{
+		} else {
 			cationSound.play();
 		}
 		if (res > 0) {
@@ -321,10 +336,11 @@ public class FGameAct implements ApplicationListener {
 			updateProcess(lastTime - playTime);
 		}
 
-		if(msgShow && System.currentTimeMillis() - msgStartTime >  msgShowTime){
+		if (msgShow && msgShowTime > 0
+				&& System.currentTimeMillis() - msgStartTime > msgShowTime) {
 			hideMsg();
 		}
-		
+
 		// 绘图
 		stage.draw();
 	}
@@ -467,7 +483,7 @@ public class FGameAct implements ApplicationListener {
 				playTime = System.currentTimeMillis() - playTime;
 			}
 			btn2.setText("继续");
-			showMsg("游戏暂停", 1000);
+			showMsg("游戏暂停", 0);
 			// loopMusic.pause();
 			break;
 		case RESUME:
@@ -484,33 +500,49 @@ public class FGameAct implements ApplicationListener {
 			btn1.setText("开始");
 			btn2.setDisabled(true);
 			overSound.play();
-			showMsg("游戏结束 恭喜\n你的得分" + fgame.getScore(), 3000);
+			// 显示成绩
+			showScore(fgame.getScore());
 			break;
 		}
 	}
-	
+
 	/**
 	 * 显示消息
+	 * 
 	 * @param msg
 	 * @param time
+	 *            时间大于0，到时会消失，否则一直显示，直到点击
 	 */
-	public void showMsg(String msg, long time){
-		msgLab.setText(msg);
+	public void showMsg(String msg, long time) {
+		msgBox.setText(msg);
 		int[] centerGame = para.getCenterGameBound();
-		float x = centerGame[0] - msgLab.getTextBounds().width / 2;
-		float y = centerGame[1] - msgLab.getTextBounds().height / 2;
-		msgLab.setPosition(x, y);
+		float width = msgBox.getLabel().getTextBounds().width + 30;
+		float height = msgBox.getLabel().getTextBounds().height + 60;
+		float x = centerGame[0] - width / 2;
+		float y = centerGame[1] - height / 2;
+		msgBox.setBounds(x, y, width, height);
+		msgBox.setPosition(x, y);
 		msgStartTime = System.currentTimeMillis();
 		msgShow = true;
 		msgShowTime = time;
-		stage.addActor(msgLab);
+		stage.addActor(msgBox);
 	}
-	
+
 	/**
 	 * 隐藏消息
 	 */
-	private void hideMsg(){
+	private void hideMsg() {
 		msgShow = false;
-		msgLab.remove();
+		msgBox.remove();
+	}
+
+	private void showScore(int score) {
+		int max = DataUtil.getMaxScore();
+		if (score > max) {
+			showMsg("游 戏 结 束\n恭喜New Record!\n你的得分" + fgame.getScore(), 0);
+			DataUtil.putScore(score);
+		} else {
+			showMsg("游 戏 结 束\n你的得分" + fgame.getScore(), 0);
+		}
 	}
 }
