@@ -231,6 +231,10 @@ public class FGameAct implements ApplicationListener {
 					if (System.currentTimeMillis() - msgStartTime > msgShowTime) {
 						hideMsg();
 					}
+					return true;
+				} else if(arg0.getTarget() == lab){
+					showMsg("RECORD " + DataUtil.getMaxScore(), 2000);
+					return true;
 				}
 				return false;
 			}

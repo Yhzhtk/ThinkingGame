@@ -1,4 +1,4 @@
-package com.think.game;
+package com.yhzhtk.game;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.think.game.DataUtil;
+import com.think.game.FGameAct;
 
 public class MainActivity extends AndroidApplication {
 
