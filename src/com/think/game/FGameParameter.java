@@ -20,6 +20,8 @@ public class FGameParameter {
 	private int screenWidth;
 	private int screenHeight;
 
+	private int level;
+	
 	private Rectangle gameBound;
 	private Rectangle controlBound;
 
@@ -55,8 +57,25 @@ public class FGameParameter {
 		// 根据游戏级别和屏幕信息计算行列
 		int rows = 8;
 		int cols = 12;
-
-		return getParaInstance(rows, cols, metric);
+		
+		switch(level){
+		case 1:
+			rows = 6;
+			cols = 10;
+			break;
+		case 2:
+			rows = 8;
+			cols = 12;
+			break;
+		case 3:
+			rows = 10;
+			cols = 15;
+			break;
+		default:
+			rows = 8;
+			cols = 15;
+		} 
+		return getParaInstance(level, rows, cols, metric);
 	}
 
 	/**
@@ -67,11 +86,13 @@ public class FGameParameter {
 	 * @param metric
 	 * @return
 	 */
-	private static FGameParameter getParaInstance(int rows, int cols,
+	private static FGameParameter getParaInstance(int level, int rows, int cols,
 			DisplayMetrics metric) {
 		if (para == null || para.rows != rows || para.cols != cols
 				|| para.metric != metric) {
 			para = new FGameParameter();
+			
+			para.level = level;
 
 			para.rows = rows;
 			para.cols = cols;
@@ -128,6 +149,10 @@ public class FGameParameter {
 		return centerGameBound;
 	}
 
+	public int getLevel(){
+		return level;
+	}
+	
 	public int getRows() {
 		return rows;
 	}

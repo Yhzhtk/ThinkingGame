@@ -48,9 +48,23 @@ public class MainActivity extends AndroidApplication {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.action_level1:
+			fAct.initLevel(1, true);
+			break;
+		case R.id.action_level2:
+			fAct.initLevel(2, true);
+			break;
+		case R.id.action_level3:
+			fAct.initLevel(3, true);
+			break;
 		case R.id.action_exit:
 			finish();
 			System.exit(0);
+			break;
+		case R.id.action_about:
+			String aboutStr = "开源项目，基于LibGDX框架开发的小游戏\n\n开发人：Yhzhtk、OsBelief\n\n项目地址：https://github.com/Yhzhtk/ThinkingGame";
+			new AlertDialog.Builder(this).setTitle("关于").setMessage(aboutStr)
+					.setPositiveButton("确定", null).show();
 			break;
 		case R.id.action_help:
 			String helpStr = "FGame规则：\n\n  点击空格子，空格子上下左右最近一个非空格子（最多四个，边缘处可能小于四个）中有两个或两个以上相同的格子，则可消除得分。\n\n得分提示：\n\n  点空格子一次消除2个加12分，3个加27分，4个加48分。游戏剩余时间会加分，每剩一秒加12分，无上限。游戏结束时不剩有色格子加100分，剩一个加80，依次递减。";

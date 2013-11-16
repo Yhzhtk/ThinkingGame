@@ -88,7 +88,7 @@ public class FGameAct implements ApplicationListener {
 	private TextButton btn1; // 按钮1
 	private TextButton btn2; // 按钮2
 	private Image[][] gameArea; // 存储每个区块
-	
+
 	private Image[] disAppearImg;// 消失的区块
 
 	private boolean msgShow; // 消息是否正在显示
@@ -96,6 +96,10 @@ public class FGameAct implements ApplicationListener {
 	private long msgShowTime; // 需要显示的时间
 	private long msgStartTime; // 消息开始显示时间
 
+	private boolean updateLevel; // 记录当前是否在更新等级，如果是不更新界面
+	
+	private FGameInputProcessor inputPro; // 事件处理器
+	
 	// 标志是否第一次加载
 	private boolean isInit = false;
 
@@ -126,7 +130,7 @@ public class FGameAct implements ApplicationListener {
 		imgPaths = new String[length];
 		texts = new Texture[length];
 		rects = new Image[length];
-		
+
 		disAppearImg = new Image[4];
 
 		for (int i = 0; i < length; i++) {
@@ -149,9 +153,7 @@ public class FGameAct implements ApplicationListener {
 		msgDraw = new TextureRegionDrawable(new TextureRegion(new Texture(
 				Gdx.files.internal("msg.png"))));
 
-		// 加载参数
 		para = FGameParameter.getParaInstance(1, metric);
-		fgame = new FGame(para.getRows(), para.getCols());
 
 		batch = new SpriteBatch();
 		stage = new Stage(para.getScreenWidth(), para.getScreenHeight(), true,
@@ -192,27 +194,12 @@ public class FGameAct implements ApplicationListener {
 				msgDraw, msgDraw, msgDraw, font);
 		msgBox = new TextButton("Ready!", msgStyle);
 
-		// 初始化绘图区域
-		gameTab = new Table();
-		setBound(gameTab, para.getGameBound());
-		stage.addActor(gameTab);
-
-		gameArea = new Image[para.getRows()][para.getCols()];
-		for (int j = para.getCols() - 1; j >= 0; j--) {
-			for (int i = 0; i < para.getRows(); i++) {
-				gameArea[i][j] = getImageNotPos(i, j);
-				gameTab.add(gameArea[i][j]).expand().fill()
-						.space(para.getNodeSpace());
-			}
-			gameTab.row();
-		}
-
 		// 添加按钮事件
 		stage.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event arg0) {
 				if (arg0.getTarget() == btn1) {
-					if (playState == END) {
+					if (playState == END || playState == NOTSTART) {
 						playTime = 0;
 						startSound.play();
 						updateScore(0);
@@ -237,13 +224,54 @@ public class FGameAct implements ApplicationListener {
 						hideMsg();
 					}
 					return true;
-				} else if(arg0.getTarget() == lab){
+				} else if (arg0.getTarget() == lab) {
 					showMsg("RECORD " + DataUtil.getMaxScore(), 2000);
 					return true;
 				}
 				return false;
 			}
 		});
+
+		// 默认简单级别
+		initLevel(1, false);
+	}
+
+	public void initLevel(int level, boolean judge) {
+		if (judge && para.getLevel() == level) {
+			return;
+		}
+		updateLevel = true;
+		
+		// 加载参数
+		para = FGameParameter.getParaInstance(level, metric);
+		fgame = new FGame(para.getRows(), para.getCols());
+
+		if(inputPro != null){
+			inputPro.updateAttri(this);
+		}
+		
+		updateState(NOTSTART);
+		
+		stage.getActors().removeValue(gameTab, false);
+		
+		// 初始化绘图区域
+		gameTab = new Table();
+		
+		setBound(gameTab, para.getGameBound());
+		stage.addActor(gameTab);
+
+		gameArea = new Image[para.getRows()][para.getCols()];
+		for (int j = para.getCols() - 1; j >= 0; j--) {
+			for (int i = 0; i < para.getRows(); i++) {
+				gameArea[i][j] = getImageNotPos(i, j);
+				gameTab.add(gameArea[i][j]).expand().fill()
+						.space(para.getNodeSpace());
+			}
+			gameTab.row();
+		}
+		msgBox.toFront();
+		
+		updateLevel = false;
 	}
 
 	/**
@@ -264,7 +292,8 @@ public class FGameAct implements ApplicationListener {
 			if (FGameUtil.checkGameOver(fgame.getRcs())) {
 				Log.i("IsEnd", "check ok");
 				// 结束时如果还剩时间则加分数
-				long remainTime = para.getGameTime() - (System.currentTimeMillis() - playTime);
+				long remainTime = para.getGameTime()
+						- (System.currentTimeMillis() - playTime);
 				fgame.setRemainTime(remainTime);
 				updateState(END);
 			} else {
@@ -317,7 +346,8 @@ public class FGameAct implements ApplicationListener {
 
 		// 添加事件，先判断是否游戏点击，后判断按钮等
 		InputMultiplexer multi = new InputMultiplexer();
-		multi.addProcessor(new FGameInputProcessor(this));
+		inputPro = new FGameInputProcessor(this);
+		multi.addProcessor(inputPro);
 		multi.addProcessor(stage);
 		Gdx.input.setInputProcessor(multi);
 
@@ -332,7 +362,7 @@ public class FGameAct implements ApplicationListener {
 	@Override
 	public void pause() {
 		// 暂停置playTime为已玩时间
-		if(playState == START){
+		if (playState == START) {
 			updateState(PAUSE);
 		}
 		Log.d("GdxEvent", "pause");
@@ -354,10 +384,12 @@ public class FGameAct implements ApplicationListener {
 				&& System.currentTimeMillis() - msgStartTime > msgShowTime) {
 			hideMsg();
 		}
-
-		stage.act(Gdx.graphics.getDeltaTime());
-		// 绘图
-		stage.draw();
+		
+		if(!updateLevel){
+			stage.act(Gdx.graphics.getDeltaTime());
+			// 绘图
+			stage.draw();
+		}
 	}
 
 	@Override
@@ -387,7 +419,10 @@ public class FGameAct implements ApplicationListener {
 	 */
 	private void repaint() {
 		int[][] xyv = fgame.getRemoveInfos();
-		for(int[] xy : xyv){
+		if(xyv == null){
+			return;
+		}
+		for (int[] xy : xyv) {
 			updateImage(xy[0], xy[1]);
 		}
 		disAppear(xyv);
@@ -479,7 +514,8 @@ public class FGameAct implements ApplicationListener {
 		switch (state) {
 		case NOTSTART:
 			playState = NOTSTART;
-			showMsg("Game NOTSTART", 1000);
+			btn1.setText("开始");
+			btn2.setDisabled(true);
 			break;
 		case START:
 			playState = START;
@@ -560,7 +596,7 @@ public class FGameAct implements ApplicationListener {
 			showMsg("游 戏 结 束\n你的得分" + fgame.getScore(), 0);
 		}
 	}
-	
+
 	/**
 	 * 移除的动态效果
 	 * 
@@ -570,9 +606,9 @@ public class FGameAct implements ApplicationListener {
 		int i = 0;
 		for (int[] xy : removeNodes) {
 			disAppearImg[i] = new Image(texts[xy[2]]);
-			disAppearImg[i].setBounds(
-					para.getGameBound().getX() + gameArea[xy[0]][xy[1]].getX(),
-					para.getGameBound().getY() + gameArea[xy[0]][xy[1]].getY(),
+			disAppearImg[i].setBounds(para.getGameBound().getX()
+					+ gameArea[xy[0]][xy[1]].getX(), para.getGameBound().getY()
+					+ gameArea[xy[0]][xy[1]].getY(),
 					gameArea[xy[0]][xy[1]].getWidth(),
 					gameArea[xy[0]][xy[1]].getHeight());
 			disAppearImg[i].addAction(Actions.fadeOut(1.5f));

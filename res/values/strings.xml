@@ -8,5 +8,8 @@
     <string name="action_pause">暂停</string>
     <string name="action_resume">继续</string>
     <string name="action_help">帮助</string>
-
+    <string name="action_level1">简单</string>
+    <string name="action_level2">一般</string>
+    <string name="action_level3">困难</string>
+	<string name="action_about">关于</string>
 </resources>

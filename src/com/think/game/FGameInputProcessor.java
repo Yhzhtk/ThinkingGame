@@ -24,6 +24,10 @@ public class FGameInputProcessor implements InputProcessor {
 	private int height;
 
 	public FGameInputProcessor(FGameAct fGame) {
+		updateAttri(fGame);
+	}
+
+	public void updateAttri(FGameAct fGame){
 		this.fGame = fGame;
 		FGameParameter para = fGame.para;
 		x1 = (int) para.getGameBound().getX();
@@ -35,7 +39,7 @@ public class FGameInputProcessor implements InputProcessor {
 
 		height = para.getScreenHeight();
 	}
-
+	
 	/**
 	 * 响应TouchUp事件
 	 * 
