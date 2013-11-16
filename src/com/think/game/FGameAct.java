@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -87,6 +88,8 @@ public class FGameAct implements ApplicationListener {
 	private TextButton btn1; // 按钮1
 	private TextButton btn2; // 按钮2
 	private Image[][] gameArea; // 存储每个区块
+	
+	private Image[] disAppearImg;// 消失的区块
 
 	private boolean msgShow; // 消息是否正在显示
 	private TextButton msgBox; // 消息Label
@@ -123,6 +126,8 @@ public class FGameAct implements ApplicationListener {
 		imgPaths = new String[length];
 		texts = new Texture[length];
 		rects = new Image[length];
+		
+		disAppearImg = new Image[4];
 
 		for (int i = 0; i < length; i++) {
 			imgPaths[i] = "image/" + i + ".png";
@@ -350,6 +355,7 @@ public class FGameAct implements ApplicationListener {
 			hideMsg();
 		}
 
+		stage.act(Gdx.graphics.getDeltaTime());
 		// 绘图
 		stage.draw();
 	}
@@ -380,11 +386,11 @@ public class FGameAct implements ApplicationListener {
 	 * 重绘界面
 	 */
 	private void repaint() {
-		for (int i = 0; i < fgame.getRows(); i++) {
-			for (int j = 0; j < fgame.getCols(); j++) {
-				updateImage(i, j);
-			}
+		int[][] xyv = fgame.getRemoveInfos();
+		for(int[] xy : xyv){
+			updateImage(xy[0], xy[1]);
 		}
+		disAppear(xyv);
 	}
 
 	/**
@@ -552,6 +558,30 @@ public class FGameAct implements ApplicationListener {
 			DataUtil.putScore(score);
 		} else {
 			showMsg("游 戏 结 束\n你的得分" + fgame.getScore(), 0);
+		}
+	}
+	
+	/**
+	 * 移除的动态效果
+	 * 
+	 * @param removeNodes
+	 */
+	public void disAppear(int[][] removeNodes) {
+		int i = 0;
+		for (int[] xy : removeNodes) {
+			disAppearImg[i] = new Image(texts[xy[2]]);
+			disAppearImg[i].setBounds(
+					para.getGameBound().getX() + gameArea[xy[0]][xy[1]].getX(),
+					para.getGameBound().getY() + gameArea[xy[0]][xy[1]].getY(),
+					gameArea[xy[0]][xy[1]].getWidth(),
+					gameArea[xy[0]][xy[1]].getHeight());
+			disAppearImg[i].addAction(Actions.fadeOut(1.5f));
+			disAppearImg[i].addAction(Actions.moveTo(para.getScreenWidth() / 2,
+					para.getScreenHeight(), 1f));
+			disAppearImg[i].addAction(Actions.scaleTo(0.1f, 0.1f, 1f));
+			disAppearImg[i].addAction(Actions.rotateTo(720, 1f));
+			stage.addActor(disAppearImg[i]);
+			i++;
 		}
 	}
 }

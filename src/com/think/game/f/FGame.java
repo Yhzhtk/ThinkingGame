@@ -22,6 +22,8 @@ public class FGame {
 
 	private int emptyCount = 10;
 	private int score = 0;
+	
+	private int[][] removeInfos;
 
 	public FGame(int rows, int cols) {
 		this(rows, cols, 6, (int) (rows * cols * 0.15));
@@ -97,6 +99,7 @@ public class FGame {
 			return 1;
 		}
 
+		removeInfos = new int[clearNodes.size()][3];
 		// 有需要消除的节点
 		clearMatchedNodes(clearNodes);
 
@@ -200,6 +203,9 @@ public class FGame {
 	private void clearMatchedNodes(List<int[]> clearNodes) {
 		int base = 0;
 		for (int[] node : clearNodes) {
+			removeInfos[base][0] = node[0];
+			removeInfos[base][1] = node[1];
+			removeInfos[base][2] = rcs[node[0]][node[1]];
 			setRC(node, 0);
 			base++;
 		}
@@ -237,6 +243,10 @@ public class FGame {
 
 	public int getScore() {
 		return score;
+	}
+
+	public int[][] getRemoveInfos() {
+		return removeInfos;
 	}
 
 	/**
