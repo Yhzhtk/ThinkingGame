@@ -258,6 +258,9 @@ public class FGameAct implements ApplicationListener {
 			// 判断是否结束
 			if (FGameUtil.checkGameOver(fgame.getRcs())) {
 				Log.i("IsEnd", "check ok");
+				// 结束时如果还剩时间则加分数
+				long remainTime = para.getGameTime() - (System.currentTimeMillis() - playTime);
+				fgame.setRemainTime(remainTime);
 				updateState(END);
 			} else {
 				Log.i("IsEnd", "check false");
@@ -324,7 +327,9 @@ public class FGameAct implements ApplicationListener {
 	@Override
 	public void pause() {
 		// 暂停置playTime为已玩时间
-		updateState(PAUSE);
+		if(playState == START){
+			updateState(PAUSE);
+		}
 		Log.d("GdxEvent", "pause");
 	}
 
@@ -360,7 +365,7 @@ public class FGameAct implements ApplicationListener {
 			return;
 		}
 		// 重置开始时间
-		updateState(RESUME);
+		// updateState(RESUME);
 
 		// 当pause时EGL的资源被销毁，resume时需要加载
 		for (int i = 0; i < FGameUtil.getAllColors().length; i++) {

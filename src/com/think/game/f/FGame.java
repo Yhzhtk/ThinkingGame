@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -236,5 +237,14 @@ public class FGame {
 
 	public int getScore() {
 		return score;
+	}
+
+	/**
+	 * 根据剩余时间，加上得分，剩余秒数的12倍
+	 * @param remainTime
+	 */
+	public void setRemainTime(long remainTime) {
+		score += remainTime / 1000 * 12;
+		Log.i("RemainTime", "剩余时间" + remainTime + " 加分" + remainTime / 1000 * 12);
 	}
 }
