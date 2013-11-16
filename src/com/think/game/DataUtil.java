@@ -13,7 +13,9 @@ public class DataUtil {
 
 	private static Activity context;
 
-	private final static String fMaxScore = "fMaxScore";
+	private final static String fMaxScore1 = "fMaxScore1";
+	private final static String fMaxScore2 = "fMaxScore2";
+	private final static String fMaxScore3 = "fMaxScore3";
 
 	public static void initDataUtil(Activity ctx) {
 		DataUtil.context = ctx;
@@ -24,11 +26,11 @@ public class DataUtil {
 	 * 
 	 * @param score
 	 */
-	public static void putScore(int score) {
+	public static void putScore(int level, int score) {
 		SharedPreferences sharedPref = context
 				.getPreferences(Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putInt(fMaxScore, score);
+		editor.putInt(getLevelKey(level), score);
 		editor.commit();
 	}
 
@@ -37,9 +39,21 @@ public class DataUtil {
 	 * 
 	 * @return
 	 */
-	public static int getMaxScore() {
+	public static int getMaxScore(int level) {
 		SharedPreferences sharedPref = context
 				.getPreferences(Context.MODE_PRIVATE);
-		return sharedPref.getInt(fMaxScore, 0);
+		return sharedPref.getInt(getLevelKey(level), 0);
+	}
+	
+	private static String getLevelKey(int level){
+		switch(level){
+		case 1:
+			return fMaxScore1;
+		case 2:
+			return fMaxScore2;
+		case 3:
+			return fMaxScore3;
+		}
+		return "";
 	}
 }

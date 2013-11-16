@@ -225,7 +225,13 @@ public class FGameAct implements ApplicationListener {
 					}
 					return true;
 				} else if (arg0.getTarget() == lab) {
-					showMsg("RECORD " + DataUtil.getMaxScore(), 2000);
+					String record = new StringBuffer()
+							.append("RECORDS\n\nL1: ")
+							.append(DataUtil.getMaxScore(1)).append("\nL2: ")
+							.append(DataUtil.getMaxScore(2)).append("\nL3: ")
+							.append(DataUtil.getMaxScore(3)).append("\n")
+							.toString();
+					showMsg(record, 2000);
 					return true;
 				}
 				return false;
@@ -588,10 +594,10 @@ public class FGameAct implements ApplicationListener {
 	}
 
 	private void showScore(int score) {
-		int max = DataUtil.getMaxScore();
+		int max = DataUtil.getMaxScore(para.getLevel());
 		if (score > max) {
 			showMsg("游 戏 结 束\n恭喜New Record!\n你的得分" + fgame.getScore(), 0);
-			DataUtil.putScore(score);
+			DataUtil.putScore(para.getLevel(), score);
 		} else {
 			showMsg("游 戏 结 束\n你的得分" + fgame.getScore(), 0);
 		}
