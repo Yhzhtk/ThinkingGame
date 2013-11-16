@@ -1,5 +1,6 @@
 package com.yhzhtk.game;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -51,6 +52,10 @@ public class MainActivity extends AndroidApplication {
 			finish();
 			System.exit(0);
 			break;
+		case R.id.action_help:
+			String helpStr = "FGame规则：\n\n  点击空格子，空格子上下左右最近一个非空格子（最多四个，边缘处可能小于四个）中有两个或两个以上相同的格子，则可消除得分。\n\n得分提示：\n\n  点空格子一次消除2个加12分，3个加27分，4个加48分。游戏剩余时间会加分，每剩一秒加12分，无上限。游戏结束时不剩有色格子加100分，剩一个加80，依次递减。";
+			new AlertDialog.Builder(this).setTitle("游戏帮助").setMessage(helpStr)
+					.setPositiveButton("确定", null).show();
 		default:
 			return super.onOptionsItemSelected(item);
 		}

@@ -7,5 +7,6 @@
     <string name="action_end">结束</string>
     <string name="action_pause">暂停</string>
     <string name="action_resume">继续</string>
+    <string name="action_help">帮助</string>
 
 </resources>
