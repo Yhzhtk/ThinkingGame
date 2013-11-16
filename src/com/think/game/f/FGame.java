@@ -240,11 +240,30 @@ public class FGame {
 	}
 
 	/**
-	 * 根据剩余时间，加上得分，剩余秒数的12倍
+	 * 没有可以消除的了，根据剩余时间和剩余个数，加上得分，剩余秒数的12倍
+	 * 
 	 * @param remainTime
 	 */
 	public void setRemainTime(long remainTime) {
-		score += remainTime / 1000 * 12;
-		Log.i("RemainTime", "剩余时间" + remainTime + " 加分" + remainTime / 1000 * 12);
+		int add1 = (int) (remainTime / 1000 * 12);
+		score += add1;
+
+		int remainNode = 0;
+		out: for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (rcs[i][j] != 0) {
+					remainNode++;
+					// 超过5个已经不可能加分了
+					if (remainNode == 5) {
+						break out;
+					}
+				}
+			}
+		}
+		int add2 = 100 - (remainNode * 20);
+		score += add2;
+		
+		Log.i("RemainTime", "剩余时间" + remainTime + " 加分" + add1 + " 剩余个数"
+				+ remainNode + " 加分" + add2);
 	}
 }
