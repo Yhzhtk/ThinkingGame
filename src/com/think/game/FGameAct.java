@@ -90,6 +90,7 @@ public class FGameAct implements ApplicationListener {
 	private Image[][] gameArea; // 存储每个区块
 
 	private Image[] disAppearImg;// 消失的区块
+	private int disImgIndex;
 
 	private boolean msgShow; // 消息是否正在显示
 	private TextButton msgBox; // 消息Label
@@ -131,7 +132,8 @@ public class FGameAct implements ApplicationListener {
 		texts = new Texture[length];
 		rects = new Image[length];
 
-		disAppearImg = new Image[4];
+		disAppearImg = new Image[10];
+		disImgIndex = 0;
 
 		for (int i = 0; i < length; i++) {
 			imgPaths[i] = "image/" + i + ".png";
@@ -609,21 +611,38 @@ public class FGameAct implements ApplicationListener {
 	 * @param removeNodes
 	 */
 	public void disAppear(int[][] removeNodes) {
-		int i = 0;
 		for (int[] xy : removeNodes) {
-			disAppearImg[i] = new Image(texts[xy[2]]);
-			disAppearImg[i].setBounds(para.getGameBound().getX()
+			if(disAppearImg[disImgIndex] == null){
+				disAppearImg[disImgIndex] = new Image(texts[xy[2]]);
+			} else{
+				disAppearImg[disImgIndex]
+						.setDrawable(new TextureRegionDrawable(
+								new TextureRegion(texts[xy[2]])));
+				disAppearImg[disImgIndex].getColor().a = 1;
+				disAppearImg[disImgIndex].setScale(1);
+				disAppearImg[disImgIndex].setRotation(0);
+				disAppearImg[disImgIndex].toFront();
+			}
+			
+			disAppearImg[disImgIndex].setBounds(para.getGameBound().getX()
 					+ gameArea[xy[0]][xy[1]].getX(), para.getGameBound().getY()
 					+ gameArea[xy[0]][xy[1]].getY(),
 					gameArea[xy[0]][xy[1]].getWidth(),
 					gameArea[xy[0]][xy[1]].getHeight());
-			disAppearImg[i].addAction(Actions.fadeOut(1.5f));
-			disAppearImg[i].addAction(Actions.moveTo(para.getScreenWidth() / 2,
+			disAppearImg[disImgIndex].addAction(Actions.fadeOut(1.5f));
+			disAppearImg[disImgIndex].addAction(Actions.moveTo(para.getScreenWidth() / 2,
 					para.getScreenHeight(), 1f));
-			disAppearImg[i].addAction(Actions.scaleTo(0.1f, 0.1f, 1f));
-			disAppearImg[i].addAction(Actions.rotateTo(720, 1f));
-			stage.addActor(disAppearImg[i]);
-			i++;
+			disAppearImg[disImgIndex].addAction(Actions.scaleTo(0.1f, 0.1f, 1f));
+			disAppearImg[disImgIndex].addAction(Actions.rotateTo(720, 1f));
+			
+			if(!stage.getActors().contains(disAppearImg[disImgIndex], false)){
+				stage.addActor(disAppearImg[disImgIndex]);
+			}
+			
+			disImgIndex++;
+			if(disImgIndex == disAppearImg.length){
+				disImgIndex = 0;
+			}
 		}
 	}
 }
