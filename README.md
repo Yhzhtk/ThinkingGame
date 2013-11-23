@@ -1,7 +1,7 @@
 ThinkingGame
 ============
 
-基于LigGDX的Android小游戏，使用Stage(舞台)-Actor(演员)的方式呈现游戏。
+基于LibGDX的Android小游戏，使用Stage(舞台)-Actor(演员)的方式呈现游戏。
 
 ###代码说明
 
