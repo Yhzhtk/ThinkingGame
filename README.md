@@ -24,3 +24,15 @@ ThinkingGame
 ###得分提示：
 
 点空格子一次消除2个加12分，3个加27分，4个加48分。游戏剩余时间会加分，每剩一秒加12分，无上限。游戏结束时不剩有色格子加100分，剩一个加80，依次递减。
+
+###试玩
+
+下载地址：[TGame.apk](https://github.com/Yhzhtk/ThinkingGame/blob/master/TGame.apk?raw=true)
+
+适配版本： Android2.3及以上
+
+二维码下载：
+
+![TGame-qr](https://f.cloud.github.com/assets/3378278/1610419/af2ce0a4-557d-11e3-9f62-9c7d324c254c.png)
+
+如有问题欢迎通过Issue反馈！
