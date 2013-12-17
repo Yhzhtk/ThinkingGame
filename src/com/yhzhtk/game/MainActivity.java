@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.think.game.DataUtil;
 import com.think.game.FGameAct;
+import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends AndroidApplication {
 
@@ -95,5 +96,21 @@ public class MainActivity extends AndroidApplication {
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	
+	/**
+	 * 友盟统计
+	 */
+	public void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	/**
+	 * 友盟统计
+	 */
+	public void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 }
